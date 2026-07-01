@@ -1,4 +1,4 @@
-# Gala · CRM para casas de festa 🥂
+# Brinde · CRM para casas de festa 🥂
 
 Mock de um CRM completo para **casas de festa e salões de eventos**, em um único arquivo `index.html`
 (HTML + CSS + JS, sem build). Do primeiro "oi" no WhatsApp ao último brinde.

@@ -3,13 +3,13 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Gala · CRM para casas de festa</title>
-<meta name="description" content="Gala — o CRM que cuida da festa do primeiro oi ao último brinde.">
+<title>Brinde · CRM para casas de festa</title>
+<meta name="description" content="Brinde — o CRM que cuida da festa do primeiro oi ao último brinde.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700;9..144,800;9..144,900&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <script>
-  (function(){ try{ var t = localStorage.getItem('gala.theme'); if(t==='dark') document.documentElement.setAttribute('data-theme','dark'); }catch(e){} })();
+  (function(){ try{ var t = localStorage.getItem('brinde.theme'); if(t==='dark') document.documentElement.setAttribute('data-theme','dark'); }catch(e){} })();
 </script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <style>
@@ -545,8 +545,8 @@
   </button>
   <div class="login-left">
     <div class="login-brand">
-      <div class="lb-mark" style="font-family:var(--font-display);font-weight:700">G</div>
-      <div><div class="lb-name">Gala</div><div class="lb-sub">CRM para casas de festa</div></div>
+      <div class="lb-mark" style="font-family:var(--font-display);font-weight:700">B</div>
+      <div><div class="lb-name">Brinde</div><div class="lb-sub">CRM para casas de festa</div></div>
     </div>
     <div class="login-hero">
       <div class="login-eyebrow">O CRM que entende de festa</div>
@@ -559,7 +559,7 @@
         <div class="login-feat"><div class="login-feat-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="8" width="18" height="4"/><path d="M5 12v9h14v-9M12 8v13M12 8H8a2 2 0 0 1 0-4c3 0 4 4 4 4zM12 8h4a2 2 0 0 0 0-4c-3 0-4 4-4 4z"/></svg></div><div class="login-feat-txt"><strong>Adicionais na hora certa</strong><span>Mesa de bolo, banda e fotógrafo perto do evento</span></div></div>
       </div>
     </div>
-    <div class="login-foot">© 2026 Grupo Encanto Eventos · Gala · agente.crm by agente.lab</div>
+    <div class="login-foot">© 2026 Grupo Encanto Eventos · Brinde · agente.crm by agente.lab</div>
   </div>
   <div class="login-right">
     <div class="login-form-head">
@@ -570,7 +570,7 @@
       <div class="field"><label>E-mail</label><input type="email" value="ricardo@grupoencanto.com.br" autocomplete="email"></div>
       <div class="field"><label>Senha</label><input type="password" value="festa2026" autocomplete="current-password"></div>
       <div class="login-row"><label><input type="checkbox" checked> Manter conectado</label><a href="#" onclick="return false">Esqueci a senha</a></div>
-      <button type="submit" class="btn btn-brand login-btn">Entrar no Gala →</button>
+      <button type="submit" class="btn btn-brand login-btn">Entrar no Brinde →</button>
     </form>
     <div class="login-or">ou entre como demo</div>
     <div class="login-quick">
@@ -584,8 +584,8 @@
 <!-- ===================== SIDEBAR ===================== -->
 <aside class="sidebar" id="sidebar">
   <div class="brand">
-    <div class="brand-mark">G</div>
-    <div class="brand-txt"><span class="brand-name">Gala</span><span class="brand-sub">agente.crm</span></div>
+    <div class="brand-mark">B</div>
+    <div class="brand-txt"><span class="brand-name">Brinde</span><span class="brand-sub">agente.crm</span></div>
   </div>
 
   <div class="nav-group">
@@ -920,7 +920,7 @@ const scopedDeals = () => SCOPE==='all' ? DEALS : DEALS.filter(d => d.venue===SC
 const scopedClients = () => SCOPE==='all' ? CLIENTS : CLIENTS.filter(c => c.venue===SCOPE);
 const scopedPayments = () => SCOPE==='all' ? PAYMENTS : PAYMENTS.filter(p => p.venue===SCOPE);
 const venueName = id => (VENUES.find(v=>v.id===id)||{}).name || '—';
-const venueMono = id => (VENUES.find(v=>v.id===id)||{}).mono || 'G';
+const venueMono = id => (VENUES.find(v=>v.id===id)||{}).mono || 'B';
 const venueColor = id => (VENUES.find(v=>v.id===id)||{}).color || 'var(--accent)';
 const venueEmoji = id => `<span class="vdot" style="background:${venueColor(id)}"></span>`;
 const ICONS={
@@ -1089,7 +1089,7 @@ function route(name){
 }
 
 /* ---------- THEME ---------- */
-const THEME_KEY='gala.theme';
+const THEME_KEY='brinde.theme';
 function applyTheme(theme){
   const html=document.documentElement;
   if(theme==='dark') html.setAttribute('data-theme','dark'); else html.removeAttribute('data-theme');
@@ -1105,7 +1105,7 @@ document.querySelectorAll('.theme-toggle').forEach(b=>b.addEventListener('click'
 function renderVenueMenu(){
   const menu=el('venueMenu');
   const optAll=`<div class="venue-opt ${SCOPE==='all'?'sel':''}" data-venue="all">
-    <div class="vo-dot" style="background:var(--accent);color:var(--on-accent);font-weight:700;font-size:11px">G</div>
+    <div class="vo-dot" style="background:var(--accent);color:var(--on-accent);font-weight:700;font-size:11px">B</div>
     <div class="vo-txt"><strong>Todos os salões</strong><span>Visão consolidada do dono</span></div>
     <svg class="vo-check" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div>`;
   const opts=VENUES.map(v=>`<div class="venue-opt ${SCOPE===v.id?'sel':''}" data-venue="${v.id}">
@@ -1120,7 +1120,7 @@ function setScope(id){
   const v=scopeVenue();
   el('venueName').textContent = id==='all' ? 'Todos os salões' : v.name;
   el('venueTag').textContent = id==='all' ? 'Visão do dono' : v.tag;
-  el('venueDot').textContent = id==='all' ? 'G' : v.mono;
+  el('venueDot').textContent = id==='all' ? 'B' : v.mono;
   renderVenueMenu();
   const active=document.querySelector('.nav-item.active')?.dataset.route;
   if(active && PAGE_RENDER[active]) PAGE_RENDER[active]();
@@ -1410,11 +1410,11 @@ function renderLeadInbox(){
         <div class="card-head"><div class="card-title">Conversa · Sofia Ribeiro</div><span class="pill green dot">online</span></div>
         <div class="wa-thread">
           <div class="wa-msg them">Oi! Vi o perfil de vocês no Instagram. Vocês fazem festa de 15 anos?<span class="wa-time">17:42</span></div>
-          <div class="wa-msg ai"><span class="wa-tag">IA Gala</span>Olá! Fazemos sim, na Villa Aurora. Para quantos convidados e você já tem uma data em mente?<span class="wa-time">17:42</span></div>
+          <div class="wa-msg ai"><span class="wa-tag">IA Brinde</span>Olá! Fazemos sim, na Villa Aurora. Para quantos convidados e você já tem uma data em mente?<span class="wa-time">17:42</span></div>
           <div class="wa-msg them">Uns 200 convidados, em julho. Tema Paris.<span class="wa-time">17:45</span></div>
-          <div class="wa-msg ai"><span class="wa-tag">IA Gala</span>Ótimo. 200 convidados cabem bem no salão. O pacote 15 Anos começa em R$ 320 por convidado e inclui buffet, DJ e camarim. Quer agendar uma visita?<span class="wa-time">17:45</span></div>
+          <div class="wa-msg ai"><span class="wa-tag">IA Brinde</span>Ótimo. 200 convidados cabem bem no salão. O pacote 15 Anos começa em R$ 320 por convidado e inclui buffet, DJ e camarim. Quer agendar uma visita?<span class="wa-time">17:45</span></div>
           <div class="wa-msg them">Quero sim. Sábado funciona?<span class="wa-time">17:47</span></div>
-          <div class="wa-msg ai"><span class="wa-tag">IA Gala</span>Agendado para sábado às 10h. Já registrei tudo no sistema para a Bianca recebê-lo.<span class="wa-time">17:47</span></div>
+          <div class="wa-msg ai"><span class="wa-tag">IA Brinde</span>Agendado para sábado às 10h. Já registrei tudo no sistema para a Bianca recebê-lo.<span class="wa-time">17:47</span></div>
         </div>
         <div class="divider"></div>
         <div class="text-sm text-mut">A IA já preencheu: <strong>tipo</strong> 15 Anos · <strong>pax</strong> 200 · <strong>data</strong> jul/2026 · <strong>tema</strong> Paris · <strong>visita</strong> sábado 10h.</div>
@@ -1576,7 +1576,7 @@ function renderPrecos(){
       </div>`).join('')}
     </div>
     <div class="divider"></div>
-    <div class="card-title" style="margin:6px 0 14px;font-size:16px">Planos do Gala <span class="text-mut" style="font-weight:400;font-size:12px">· o que você paga pra usar o sistema (referência Revenda Mais)</span></div>
+    <div class="card-title" style="margin:6px 0 14px;font-size:16px">Planos do Brinde <span class="text-mut" style="font-weight:400;font-size:12px">· o que você paga pra usar o sistema (referência Revenda Mais)</span></div>
     <div class="price-grid">
       ${PLANS.map(p=>`<div class="price-card ${p.featured?'featured':''}">
         <div class="price-name">${p.name}</div>
@@ -1807,7 +1807,7 @@ const INTEGS=[
 function renderConfig(){
   el('page-config').innerHTML=`
     <div class="page-head">
-      <div><h1 class="page-title">Configurações</h1><p class="page-sub">Seus salões, o funil que ensina a equipe e as integrações que fazem o Gala conversar com o resto do mundo.</p></div>
+      <div><h1 class="page-title">Configurações</h1><p class="page-sub">Seus salões, o funil que ensina a equipe e as integrações que fazem o Brinde conversar com o resto do mundo.</p></div>
     </div>
     <div class="card-title" style="margin-bottom:14px;font-size:16px">Seus salões</div>
     <div class="grid" style="grid-template-columns:repeat(3,1fr)">
