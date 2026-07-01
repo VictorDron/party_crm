@@ -1,0 +1,1838 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gala · CRM para casas de festa</title>
+<meta name="description" content="Gala — o CRM que cuida da festa do primeiro oi ao último brinde.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700;9..144,800;9..144,900&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script>
+  (function(){ try{ var t = localStorage.getItem('gala.theme'); if(t==='dark') document.documentElement.setAttribute('data-theme','dark'); }catch(e){} })();
+</script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+  :root{
+    /* LIGHT — festivo, elegante, encantador */
+    --bg:#faf7fd; --bg-2:#ffffff; --bg-3:#f4eefb; --bg-4:#ebe1f7;
+    --line:#ece2f6; --line-2:#dccef0;
+    --text:#1c1226; --text-2:#5f5473; --text-3:#948aa9;
+    --accent:#7c3aed; --accent-2:#a855f7; --accent-soft:rgba(124,58,237,.10);
+    --gold:#c08a2e; --gold-soft:rgba(192,138,46,.12);
+    --rose:#e5397f; --rose-soft:rgba(229,57,127,.10);
+    --green:#12a150; --green-soft:rgba(18,161,80,.10);
+    --red:#e0304a; --red-soft:rgba(224,48,74,.10);
+    --blue:#3a7ee0; --blue-soft:rgba(58,126,224,.10);
+    --purple:#8b5cf6; --purple-soft:rgba(139,92,246,.10);
+    --orange:#e5811f; --orange-soft:rgba(229,129,31,.10);
+    --teal:#0e9aa7; --teal-soft:rgba(14,154,167,.10);
+    --on-accent:#ffffff; --on-gold:#2a1c00; --on-green:#043422; --on-rose:#fff;
+    --scroll-thumb:#d8cbe9; --scroll-thumb-hover:#bda6dd;
+    --shadow-1:0 1px 2px rgba(40,20,60,.05), 0 1px 1px rgba(40,20,60,.03);
+    --shadow-2:0 6px 22px rgba(60,30,90,.08), 0 2px 6px rgba(60,30,90,.05);
+    --shadow-3:0 16px 44px rgba(60,30,90,.14);
+    --shadow-overlay:0 28px 70px rgba(40,15,70,.22);
+    --backdrop:rgba(35,18,55,.32);
+    --grad-brand:linear-gradient(120deg,#7c3aed,#c026d3 55%,#e5397f);
+    --grad-gold:linear-gradient(120deg,#e6be6a,#c08a2e);
+    --r-sm:7px; --r-md:11px; --r-lg:16px; --r-xl:22px;
+    --font-display:'Fraunces',Georgia,serif;
+    --font-body:'Plus Jakarta Sans',system-ui,sans-serif;
+    --font-mono:'JetBrains Mono',monospace;
+  }
+  [data-theme="dark"]{
+    --bg:#120c1c; --bg-2:#180f26; --bg-3:#1f142f; --bg-4:#2a1d3d;
+    --line:#2c1f42; --line-2:#3a2a54;
+    --text:#f6f1fb; --text-2:#b8abcf; --text-3:#7d7098;
+    --accent:#a855f7; --accent-2:#c084fc; --accent-soft:rgba(168,85,247,.15);
+    --gold:#e6be6a; --gold-soft:rgba(230,190,106,.14);
+    --rose:#ff5c9d; --rose-soft:rgba(255,92,157,.14);
+    --green:#34d399; --green-soft:rgba(52,211,153,.14);
+    --red:#f4576b; --red-soft:rgba(244,87,107,.14);
+    --blue:#5e9eff; --blue-soft:rgba(94,158,255,.14);
+    --purple:#a78bfa; --purple-soft:rgba(167,139,250,.14);
+    --orange:#f59e3a; --orange-soft:rgba(245,158,58,.14);
+    --teal:#2dd4bf; --teal-soft:rgba(45,212,191,.14);
+    --on-accent:#fff; --on-gold:#2a1c00; --on-green:#032417; --on-rose:#2a0016;
+    --scroll-thumb:#33254a; --scroll-thumb-hover:#463461;
+    --shadow-1:0 1px 2px rgba(0,0,0,.45);
+    --shadow-2:0 10px 30px rgba(0,0,0,.5);
+    --shadow-3:0 22px 60px rgba(0,0,0,.62);
+    --shadow-overlay:0 28px 70px rgba(0,0,0,.6);
+    --backdrop:rgba(0,0,0,.62);
+    --grad-brand:linear-gradient(120deg,#a855f7,#d946ef 55%,#ff5c9d);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{background:var(--bg);color:var(--text);font-family:var(--font-body);font-size:14px;line-height:1.5;-webkit-font-smoothing:antialiased;transition:background-color .25s ease,color .25s ease}
+  body{display:flex;min-height:100vh}
+  body.app-locked{overflow:hidden}
+  body.nav-locked{overflow:hidden}
+  button{font-family:inherit;cursor:pointer;border:none;background:none;color:inherit}
+  input,select,textarea{font-family:inherit}
+  a{color:inherit;text-decoration:none}
+  ::-webkit-scrollbar{width:9px;height:9px}
+  ::-webkit-scrollbar-track{background:transparent}
+  ::-webkit-scrollbar-thumb{background:var(--scroll-thumb);border-radius:5px}
+  ::-webkit-scrollbar-thumb:hover{background:var(--scroll-thumb-hover)}
+  .mono{font-family:var(--font-mono)}
+  .text-mut{color:var(--text-3)}
+  .text-sm{font-size:12px}
+  .text-accent{color:var(--accent)}
+  .text-gold{color:var(--gold)}
+  .text-rose{color:var(--rose)}
+  .row{display:flex;align-items:center;gap:8px}
+  .mt-8{margin-top:8px}.mt-12{margin-top:12px}.mt-18{margin-top:18px}.mt-24{margin-top:24px}
+  .grid{display:grid;gap:16px}
+
+  /* ===== SIDEBAR ===== */
+  .sidebar{width:252px;background:var(--bg-2);border-right:1px solid var(--line);padding:20px 14px;position:fixed;height:100vh;overflow-y:auto;z-index:50;display:flex;flex-direction:column;transition:transform .25s ease}
+  .brand{display:flex;align-items:center;gap:11px;padding:4px 8px 18px;border-bottom:1px solid var(--line);margin-bottom:16px}
+  .brand-mark{width:38px;height:38px;border-radius:12px;background:var(--grad-brand);display:flex;align-items:center;justify-content:center;font-size:20px;box-shadow:0 6px 16px rgba(124,58,237,.35);flex-shrink:0}
+  .brand-txt{display:flex;flex-direction:column;line-height:1}
+  .brand-name{font-family:var(--font-display);font-size:23px;font-weight:800;letter-spacing:-.5px}
+  .brand-sub{font-size:9.5px;color:var(--text-3);letter-spacing:2px;text-transform:uppercase;margin-top:4px}
+  .nav-group{margin-bottom:16px}
+  .nav-group-title{font-size:10px;text-transform:uppercase;letter-spacing:1.5px;color:var(--text-3);padding:0 10px;margin-bottom:6px;font-weight:700}
+  .nav-item{display:flex;align-items:center;gap:11px;padding:8px 10px;border-radius:var(--r-sm);color:var(--text-2);font-size:13.5px;font-weight:500;margin-bottom:2px;transition:.15s;position:relative;cursor:pointer}
+  .nav-item:hover{background:var(--bg-3);color:var(--text)}
+  .nav-item.active{background:var(--accent-soft);color:var(--accent);font-weight:600}
+  .nav-item.active::before{content:'';position:absolute;left:-14px;top:7px;bottom:7px;width:3px;background:var(--accent);border-radius:0 3px 3px 0}
+  .nav-item svg{width:17px;height:17px;flex-shrink:0;opacity:.95}
+  .nav-item .badge{margin-left:auto;background:var(--accent-soft);color:var(--accent);padding:1px 7px;border-radius:10px;font-size:10px;font-weight:700}
+  .nav-item .badge.red{background:var(--red-soft);color:var(--red)}
+  .nav-item .badge.rose{background:var(--rose-soft);color:var(--rose)}
+  .nav-item .badge.ai{background:var(--grad-brand);color:#fff;letter-spacing:.4px}
+  .nav-item .badge.soon{background:var(--bg-4);color:var(--text-3)}
+  .sidebar-foot{margin-top:auto;padding:12px 8px 4px;border-top:1px solid var(--line);display:flex;align-items:center;gap:10px}
+  .sidebar-foot-info{display:flex;flex-direction:column;line-height:1.25;min-width:0}
+  .sidebar-foot-info strong{font-size:13px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .sidebar-foot-info span{font-size:11px;color:var(--text-3)}
+
+  .avatar{width:32px;height:32px;border-radius:50%;background:var(--bg-4);color:var(--text-2);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex-shrink:0;letter-spacing:.3px}
+  .avatar.grad{background:var(--grad-brand);color:#fff}
+
+  /* ===== TOPBAR ===== */
+  .main{flex:1;margin-left:252px;min-width:0;display:flex;flex-direction:column}
+  .topbar{height:62px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;padding:0 26px;background:color-mix(in srgb,var(--bg) 82%,transparent);position:sticky;top:0;z-index:40;backdrop-filter:blur(10px);gap:14px}
+  .topbar-left{display:flex;align-items:center;gap:12px;min-width:0}
+  .breadcrumb{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--text-3);min-width:0}
+  .breadcrumb .bc-root{white-space:nowrap}
+  .breadcrumb .sep{opacity:.5}
+  .breadcrumb strong{color:var(--text);font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .topbar-actions{display:flex;align-items:center;gap:8px}
+  .icon-btn{width:38px;height:38px;border-radius:10px;display:flex;align-items:center;justify-content:center;color:var(--text-2);transition:.15s;position:relative;border:1px solid transparent}
+  .icon-btn:hover{background:var(--bg-3);color:var(--text)}
+  .icon-btn .dot{position:absolute;top:9px;right:9px;width:7px;height:7px;border-radius:50%;background:var(--rose);border:2px solid var(--bg)}
+  .theme-toggle .ic-sun{display:none}
+  [data-theme="dark"] .theme-toggle .ic-moon{display:none}
+  [data-theme="dark"] .theme-toggle .ic-sun{display:block}
+  .icon-btn svg{width:18px;height:18px}
+  .nav-toggle{display:none}
+
+  /* venue switcher */
+  .venue-switch{position:relative}
+  .venue-btn{display:flex;align-items:center;gap:10px;padding:7px 12px;border:1px solid var(--line-2);border-radius:11px;background:var(--bg-2);transition:.15s;max-width:270px}
+  .venue-btn:hover{border-color:var(--accent);box-shadow:var(--shadow-1)}
+  .venue-dot{width:26px;height:26px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;background:var(--grad-brand)}
+  .venue-info{display:flex;flex-direction:column;line-height:1.15;text-align:left;min-width:0}
+  .venue-info strong{font-size:12.5px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .venue-info span{font-size:10px;color:var(--text-3);text-transform:uppercase;letter-spacing:.6px}
+  .venue-btn .caret{margin-left:2px;color:var(--text-3);transition:transform .2s}
+  .venue-switch.open .caret{transform:rotate(180deg)}
+  .venue-menu{position:absolute;top:calc(100% + 8px);left:0;width:300px;background:var(--bg-2);border:1px solid var(--line-2);border-radius:var(--r-md);box-shadow:var(--shadow-3);padding:6px;z-index:60;display:none;animation:pop .16s ease}
+  .venue-switch.open .venue-menu{display:block}
+  @keyframes pop{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:translateY(0)}}
+  .venue-opt{display:flex;align-items:center;gap:11px;padding:9px 10px;border-radius:var(--r-sm);cursor:pointer;transition:.12s}
+  .venue-opt:hover{background:var(--bg-3)}
+  .venue-opt.sel{background:var(--accent-soft)}
+  .venue-opt .vo-dot{width:30px;height:30px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0}
+  .venue-opt .vo-txt{flex:1;min-width:0}
+  .venue-opt .vo-txt strong{display:block;font-size:13px;font-weight:600}
+  .venue-opt .vo-txt span{font-size:11px;color:var(--text-3)}
+  .venue-opt .vo-check{color:var(--accent);opacity:0}
+  .venue-opt.sel .vo-check{opacity:1}
+  .venue-menu-sep{height:1px;background:var(--line);margin:5px 4px}
+
+  /* ===== BUTTONS ===== */
+  .btn{display:inline-flex;align-items:center;gap:7px;padding:9px 15px;border-radius:10px;font-size:13px;font-weight:600;transition:.15s;white-space:nowrap;border:1px solid transparent;line-height:1}
+  .btn svg{width:15px;height:15px}
+  .btn-primary{background:var(--accent);color:var(--on-accent)}
+  .btn-primary:hover{background:var(--accent-2);box-shadow:0 6px 16px var(--accent-soft)}
+  .btn-brand{background:var(--grad-brand);color:#fff}
+  .btn-brand:hover{filter:brightness(1.05);box-shadow:0 8px 20px rgba(124,58,237,.3)}
+  .btn-gold{background:var(--grad-gold);color:var(--on-gold)}
+  .btn-secondary{background:var(--bg-3);color:var(--text);border-color:var(--line)}
+  .btn-secondary:hover{background:var(--bg-4);border-color:var(--line-2)}
+  .btn-ghost{background:transparent;color:var(--text-2)}
+  .btn-ghost:hover{background:var(--bg-3);color:var(--text)}
+  .btn-sm{padding:6px 11px;font-size:12px}
+  .btn-lg{padding:12px 20px;font-size:14px}
+
+  /* ===== PAGES ===== */
+  .page{display:none;padding:26px 30px 60px;max-width:1440px}
+  .page.active{display:block;animation:pageIn .25s cubic-bezier(.2,.8,.2,1)}
+  @keyframes pageIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+  @keyframes fadeIn{from{opacity:0}to{opacity:1}}
+  .page-head{display:flex;align-items:flex-start;justify-content:space-between;gap:18px;margin-bottom:22px;flex-wrap:wrap}
+  .page-title{font-family:var(--font-display);font-size:30px;font-weight:800;letter-spacing:-.8px;line-height:1.1}
+  .page-title .emoji{-webkit-text-fill-color:initial}
+  .page-sub{color:var(--text-2);font-size:13.5px;margin-top:7px;max-width:760px;line-height:1.55}
+  .page-actions{display:flex;gap:8px;flex-wrap:wrap}
+
+  /* KPI */
+  .kpi-grid{grid-template-columns:repeat(4,1fr)}
+  .kpi{background:var(--bg-2);border:1px solid var(--line);border-radius:var(--r-lg);padding:18px 18px 16px;position:relative;overflow:hidden;transition:.18s}
+  .kpi:hover{border-color:var(--line-2);box-shadow:var(--shadow-2);transform:translateY(-2px)}
+  .kpi::after{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--grad-brand);opacity:.85}
+  .kpi.gold::after{background:var(--grad-gold)}
+  .kpi.rose::after{background:linear-gradient(90deg,var(--rose),#ff8bbd)}
+  .kpi.green::after{background:linear-gradient(90deg,var(--green),#6ee7b7)}
+  .kpi-label{font-size:11px;text-transform:uppercase;letter-spacing:1px;color:var(--text-3);font-weight:600;display:flex;align-items:center;gap:6px}
+  .kpi-value{font-family:var(--font-display);font-size:30px;font-weight:800;letter-spacing:-1px;margin-top:9px;line-height:1}
+  .kpi-meta{font-size:11.5px;color:var(--text-3);margin-top:9px;display:flex;align-items:center;gap:6px}
+  .kpi-delta{font-weight:700;display:inline-flex;align-items:center;gap:2px}
+  .kpi-delta.up{color:var(--green)} .kpi-delta.down{color:var(--red)}
+
+  /* CARD */
+  .card{background:var(--bg-2);border:1px solid var(--line);border-radius:var(--r-lg);padding:18px 20px}
+  .card-head{display:flex;align-items:flex-start;justify-content:space-between;gap:14px;margin-bottom:14px}
+  .card-title{font-size:14.5px;font-weight:700;letter-spacing:-.2px;display:flex;align-items:center;gap:8px}
+  .card-sub{font-size:12px;color:var(--text-3);margin-top:3px}
+
+  /* PILL */
+  .pill{display:inline-flex;align-items:center;gap:5px;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:700;letter-spacing:.2px;background:var(--bg-4);color:var(--text-2)}
+  .pill.amber{background:var(--orange-soft);color:var(--orange)}
+  .pill.green{background:var(--green-soft);color:var(--green)}
+  .pill.red{background:var(--red-soft);color:var(--red)}
+  .pill.blue{background:var(--blue-soft);color:var(--blue)}
+  .pill.purple{background:var(--purple-soft);color:var(--purple)}
+  .pill.rose{background:var(--rose-soft);color:var(--rose)}
+  .pill.gold{background:var(--gold-soft);color:var(--gold)}
+  .pill.teal{background:var(--teal-soft);color:var(--teal)}
+  .pill.accent{background:var(--accent-soft);color:var(--accent)}
+  .pill.dot::before{content:'';width:6px;height:6px;border-radius:50%;background:currentColor}
+
+  /* AI chip */
+  .ai-chip{display:inline-flex;align-items:center;gap:5px;background:var(--grad-brand);color:#fff;padding:2px 9px;border-radius:20px;font-size:10.5px;font-weight:700;letter-spacing:.4px}
+  .ai-chip::before{content:'✦';font-size:10px}
+  .ai-chip.soft{background:var(--accent-soft);color:var(--accent)}
+
+  /* ===== KANBAN ===== */
+  .kanban{display:grid;grid-auto-flow:column;grid-auto-columns:290px;gap:14px;overflow-x:auto;padding-bottom:14px;align-items:start}
+  .kb-col{background:var(--bg-3);border:1px solid var(--line);border-radius:var(--r-md);padding:12px;min-height:120px;transition:.15s}
+  .kb-col-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:4px}
+  .kb-col-title{display:flex;align-items:center;gap:8px;font-size:13px;font-weight:700}
+  .stage-dot{width:9px;height:9px;border-radius:50%;flex-shrink:0}
+  .kb-col-count{background:var(--bg-2);border:1px solid var(--line);color:var(--text-2);font-size:11px;font-weight:700;padding:1px 8px;border-radius:10px}
+  .kb-col-total{font-size:11px;color:var(--text-3);margin-bottom:10px;font-family:var(--font-mono)}
+  .deal-card{background:var(--bg-2);border:1px solid var(--line);border-radius:var(--r-md);padding:12px 13px;margin-bottom:9px;cursor:pointer;transition:.15s;user-select:none;position:relative}
+  .deal-card:hover{border-color:var(--accent);box-shadow:var(--shadow-2);transform:translateY(-1px)}
+  .deal-card.dragging{opacity:.4;transform:rotate(-2deg) scale(.97)}
+  .deal-card.hot::after{content:'🔥';position:absolute;top:10px;right:11px;font-size:13px}
+  .deal-type{display:inline-flex;align-items:center;gap:5px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;padding:2px 7px;border-radius:6px;margin-bottom:7px}
+  .deal-client{font-weight:700;font-size:13.5px;line-height:1.2}
+  .deal-event{font-size:11.5px;color:var(--text-3);margin-top:3px}
+  .deal-meta{display:flex;align-items:center;justify-content:space-between;margin-top:9px;font-size:11px}
+  .deal-value{font-weight:700;color:var(--accent);font-family:var(--font-mono)}
+  .deal-sla{color:var(--text-3)}
+  .deal-sla.warn{color:var(--orange)} .deal-sla.late{color:var(--red)}
+  .deal-foot{display:flex;align-items:center;justify-content:space-between;margin-top:9px;border-top:1px solid var(--line);padding-top:9px}
+  .kb-col.drop-target{background:var(--accent-soft);outline:2px dashed var(--accent);outline-offset:-4px}
+  .kb-col.drop-blocked{outline:2px dashed var(--red)!important;background:var(--red-soft)!important}
+  .shake-locked{animation:shake .4s ease-in-out}
+  @keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-6px)}40%{transform:translateX(6px)}60%{transform:translateX(-4px)}80%{transform:translateX(4px)}}
+
+  /* ===== TABLE ===== */
+  .tbl{width:100%;border-collapse:collapse}
+  .tbl th{text-align:left;font-size:10.5px;text-transform:uppercase;letter-spacing:.8px;color:var(--text-3);font-weight:700;padding:9px 12px;border-bottom:1px solid var(--line)}
+  .tbl td{padding:11px 12px;border-bottom:1px solid var(--line);font-size:13px;vertical-align:middle}
+  .tbl tr:last-child td{border-bottom:none}
+  .tbl tbody tr:hover,.tbl tr[data-route]:hover{background:var(--bg-3)}
+  .tbl .num{text-align:right;font-family:var(--font-mono)}
+  .table-card{background:var(--bg-2);border:1px solid var(--line);border-radius:var(--r-lg);overflow:hidden}
+
+  /* ===== FORM ===== */
+  .form-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}
+  .form-grid.cols-3{grid-template-columns:repeat(3,1fr)}
+  .field{display:flex;flex-direction:column;gap:6px}
+  .field label{font-size:10.5px;text-transform:uppercase;letter-spacing:.8px;color:var(--text-3);font-weight:700}
+  .field input,.field select,.field textarea{padding:10px 12px;background:var(--bg-3);border:1px solid var(--line);border-radius:var(--r-sm);color:var(--text);font-size:13.5px;transition:.15s;width:100%}
+  .field input:focus,.field select:focus,.field textarea:focus{outline:none;border-color:var(--accent);background:var(--bg-2);box-shadow:0 0 0 3px var(--accent-soft)}
+  .field textarea{resize:vertical;min-height:70px}
+
+  /* ===== LEAD CARDS ===== */
+  .lead-list{display:flex;flex-direction:column;gap:12px}
+  .lead-card{background:var(--bg-2);border:1px solid var(--line);border-radius:var(--r-lg);padding:16px 18px;display:grid;grid-template-columns:1fr auto;gap:18px;align-items:start;transition:.15s}
+  .lead-card:hover{border-color:var(--line-2);box-shadow:var(--shadow-2)}
+  .lead-head{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+  .lead-title{font-size:15px;font-weight:700}
+  .lead-meta{display:flex;gap:14px;flex-wrap:wrap;color:var(--text-3);font-size:12px;margin:8px 0}
+  .lead-meta span{display:flex;align-items:center;gap:5px}
+  .lead-body{color:var(--text-2);font-size:13px;line-height:1.55;margin-top:4px}
+  .lead-body em{color:var(--accent);font-style:normal;font-weight:600}
+  .lead-actions{display:flex;flex-direction:column;align-items:flex-end;gap:9px;min-width:150px}
+  .lead-score{font-family:var(--font-display);font-size:30px;font-weight:800;line-height:1;letter-spacing:-1px}
+  .lead-score.high{color:var(--green)} .lead-score.mid{color:var(--gold)} .lead-score.low{color:var(--text-3)}
+  .score-label{font-size:10px;text-transform:uppercase;letter-spacing:.8px;color:var(--text-3);font-weight:700}
+
+  /* whatsapp chat bubble */
+  .wa-thread{display:flex;flex-direction:column;gap:8px;background:var(--bg-3);border-radius:var(--r-md);padding:14px;max-height:280px;overflow-y:auto}
+  .wa-msg{max-width:78%;padding:8px 12px;border-radius:14px;font-size:12.5px;line-height:1.45}
+  .wa-msg.them{align-self:flex-start;background:var(--bg-2);border:1px solid var(--line);border-bottom-left-radius:4px}
+  .wa-msg.me{align-self:flex-end;background:var(--accent);color:#fff;border-bottom-right-radius:4px}
+  .wa-msg.ai{align-self:flex-end;background:var(--grad-brand);color:#fff;border-bottom-right-radius:4px}
+  .wa-msg .wa-time{display:block;font-size:9px;opacity:.7;margin-top:3px;text-align:right}
+  .wa-msg .wa-tag{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;opacity:.85;display:block;margin-bottom:2px}
+
+  /* ===== TIMELINE / JOURNEY ===== */
+  .timeline{display:flex;flex-direction:column;gap:8px}
+  .timeline-item{display:grid;grid-template-columns:56px 1fr auto;gap:12px;padding:11px;background:var(--bg-3);border-radius:var(--r-sm);align-items:center}
+  .timeline-date{font-family:var(--font-mono);font-size:11px;color:var(--text-3)}
+  .timeline-text{font-size:13px}
+  .timeline-text strong{color:var(--text)}
+  .timeline-value{font-weight:700;font-size:13px;color:var(--accent);font-family:var(--font-mono)}
+
+  .journey{position:relative;padding-left:30px}
+  .journey::before{content:'';position:absolute;left:13px;top:12px;bottom:12px;width:2px;background:linear-gradient(180deg,var(--blue),var(--accent),var(--green))}
+  .journey-step{position:relative;padding:14px 0 14px 12px}
+  .journey-step::before{content:'';position:absolute;left:-22px;top:20px;width:17px;height:17px;border-radius:50%;background:var(--bg-2);border:3px solid var(--blue)}
+  .journey-step.current::before{background:var(--accent);border-color:var(--accent);box-shadow:0 0 0 4px var(--accent-soft)}
+  .journey-step.done::before{background:var(--green);border-color:var(--green);content:'✓';color:#fff;font-size:10px;font-weight:900;display:flex;align-items:center;justify-content:center;line-height:0}
+  .journey-head{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:4px}
+  .journey-when{font-family:var(--font-mono);font-size:11px;color:var(--text-3);background:var(--bg-3);padding:2px 8px;border-radius:6px}
+  .journey-title{font-size:14.5px;font-weight:700}
+  .journey-desc{color:var(--text-2);font-size:12.5px;line-height:1.55}
+
+  /* ===== TABS ===== */
+  .tabs{display:flex;gap:4px;border-bottom:1px solid var(--line);margin-bottom:20px;overflow-x:auto}
+  .tab{padding:10px 16px;font-size:13px;font-weight:600;color:var(--text-3);border-bottom:2px solid transparent;margin-bottom:-1px;white-space:nowrap;transition:.15s;cursor:pointer}
+  .tab:hover{color:var(--text)}
+  .tab.active{color:var(--accent);border-bottom-color:var(--accent)}
+  .tab-pane{display:none;animation:fadeIn .25s ease}
+  .tab-pane.active{display:block}
+
+  /* ===== ADD-ONS ===== */
+  .addon-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:14px}
+  .addon-card{background:var(--bg-2);border:1px solid var(--line);border-radius:var(--r-lg);padding:16px;display:flex;flex-direction:column;gap:8px;transition:.15s;position:relative;overflow:hidden}
+  .addon-card:hover{border-color:var(--accent);box-shadow:var(--shadow-2);transform:translateY(-2px)}
+  .addon-ic{width:44px;height:44px;border-radius:12px;background:var(--bg-3);display:flex;align-items:center;justify-content:center;font-size:22px}
+  .addon-name{font-weight:700;font-size:14px}
+  .addon-cat{font-size:10.5px;color:var(--text-3);text-transform:uppercase;letter-spacing:.6px;font-weight:600}
+  .addon-price{font-family:var(--font-display);font-size:20px;font-weight:800;color:var(--accent);letter-spacing:-.5px}
+  .addon-foot{display:flex;align-items:center;justify-content:space-between;margin-top:auto;padding-top:8px;border-top:1px solid var(--line)}
+
+  /* ===== INVENTORY ===== */
+  .inv-bar{height:7px;background:var(--bg-4);border-radius:4px;overflow:hidden;min-width:80px}
+  .inv-bar > div{height:100%;border-radius:4px;background:var(--grad-brand)}
+  .inv-bar.low > div{background:linear-gradient(90deg,var(--red),#ff8a95)}
+  .inv-bar.mid > div{background:linear-gradient(90deg,var(--orange),#ffc07a)}
+  .inv-bar.ok > div{background:linear-gradient(90deg,var(--green),#6ee7b7)}
+
+  /* ===== PRICE / PLANS ===== */
+  .price-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:16px}
+  .price-card{background:var(--bg-2);border:1px solid var(--line);border-radius:var(--r-xl);padding:22px 20px;display:flex;flex-direction:column;gap:12px;position:relative;transition:.18s}
+  .price-card:hover{transform:translateY(-3px);box-shadow:var(--shadow-3);border-color:var(--line-2)}
+  .price-card.featured{border-color:var(--accent);box-shadow:0 12px 34px var(--accent-soft)}
+  .price-card.featured::before{content:'Mais procurado';position:absolute;top:-11px;left:50%;transform:translateX(-50%);background:var(--grad-brand);color:#fff;font-size:10px;font-weight:700;padding:4px 12px;border-radius:20px;letter-spacing:.4px;white-space:nowrap}
+  .price-emoji{font-size:30px}
+  .price-name{font-family:var(--font-display);font-size:21px;font-weight:800}
+  .price-val{font-family:var(--font-display);font-size:34px;font-weight:800;letter-spacing:-1.5px;line-height:1}
+  .price-val small{font-size:13px;font-weight:600;color:var(--text-3);font-family:var(--font-body);letter-spacing:0}
+  .price-feats{display:flex;flex-direction:column;gap:8px;font-size:12.5px;color:var(--text-2);margin-top:4px}
+  .price-feats div{display:flex;gap:8px;align-items:flex-start}
+  .price-feats .ck{color:var(--green);flex-shrink:0;font-weight:900}
+
+  /* ===== PAYMENTS ===== */
+  .pay-track{display:flex;gap:6px;flex-wrap:wrap;margin-top:4px}
+  .pay-dot{width:30px;height:30px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;font-family:var(--font-mono);border:1px solid var(--line)}
+  .pay-dot.paid{background:var(--green-soft);color:var(--green);border-color:transparent}
+  .pay-dot.due{background:var(--accent-soft);color:var(--accent);border-color:var(--accent)}
+  .pay-dot.late{background:var(--red-soft);color:var(--red);border-color:transparent}
+  .pay-dot.next{background:var(--bg-3);color:var(--text-3)}
+  .installment-row{display:grid;grid-template-columns:40px 1fr auto auto 110px;gap:14px;align-items:center;padding:12px 14px;border-bottom:1px solid var(--line)}
+  .installment-row:last-child{border-bottom:none}
+  .inst-n{width:32px;height:32px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-family:var(--font-mono);font-size:12px;font-weight:700;background:var(--bg-3)}
+
+  /* ===== CALENDAR ===== */
+  .cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:8px}
+  .cal-dow{text-align:center;font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:var(--text-3);padding-bottom:4px}
+  .cal-cell{background:var(--bg-2);border:1px solid var(--line);border-radius:var(--r-sm);min-height:92px;padding:7px 8px;display:flex;flex-direction:column;gap:4px;transition:.12s}
+  .cal-cell.muted{opacity:.4}
+  .cal-cell.today{border-color:var(--accent);box-shadow:0 0 0 2px var(--accent-soft)}
+  .cal-cell:hover{border-color:var(--line-2)}
+  .cal-num{font-size:12px;font-weight:700;color:var(--text-2)}
+  .cal-ev{font-size:9.5px;font-weight:600;padding:2px 6px;border-radius:5px;line-height:1.25;color:#fff;cursor:pointer;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
+  /* ===== INTEGRATIONS ===== */
+  .integ-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:14px}
+  .integ-card{background:var(--bg-2);border:1px solid var(--line);border-radius:var(--r-lg);padding:17px;display:flex;flex-direction:column;gap:11px;transition:.15s}
+  .integ-card:hover{border-color:var(--line-2);box-shadow:var(--shadow-2)}
+  .integ-head{display:flex;align-items:center;gap:11px}
+  .integ-icon{width:40px;height:40px;border-radius:11px;background:var(--bg-3);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
+  .integ-name{font-weight:700;font-size:14px}
+  .integ-desc{color:var(--text-3);font-size:12.5px;line-height:1.5;flex:1}
+  .integ-foot{display:flex;justify-content:space-between;align-items:center}
+  .status-dot{display:inline-flex;align-items:center;gap:6px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px}
+  .status-dot::before{content:'';width:7px;height:7px;border-radius:50%}
+  .status-dot.connected{color:var(--green)} .status-dot.connected::before{background:var(--green);box-shadow:0 0 0 3px var(--green-soft)}
+  .status-dot.pending{color:var(--orange)} .status-dot.pending::before{background:var(--orange)}
+  .status-dot.disabled{color:var(--text-3)} .status-dot.disabled::before{background:var(--text-3)}
+
+  /* ranking */
+  .ranking-row{display:grid;grid-template-columns:30px 1fr auto 120px;gap:12px;align-items:center;padding:11px 0;border-bottom:1px solid var(--line)}
+  .ranking-row:last-child{border-bottom:none}
+  .ranking-pos{font-family:var(--font-display);font-size:19px;font-weight:800;color:var(--text-3);text-align:center}
+  .ranking-pos.gold{color:#e0a93a} .ranking-pos.silver{color:#9ca3af} .ranking-pos.bronze{color:#cd7f45}
+  .ranking-bar{height:7px;border-radius:4px;background:var(--bg-4);overflow:hidden}
+  .ranking-bar > div{height:100%;border-radius:4px;background:var(--grad-brand)}
+
+  .chart-host{position:relative}
+
+  /* ===== MODAL ===== */
+  .modal-backdrop{position:fixed;inset:0;background:var(--backdrop);backdrop-filter:blur(5px);z-index:300;display:none;align-items:center;justify-content:center;padding:20px}
+  .modal-backdrop.open{display:flex;animation:fadeIn .2s ease}
+  .modal{background:var(--bg-2);border:1px solid var(--line);border-radius:var(--r-lg);width:100%;max-width:560px;padding:24px;box-shadow:var(--shadow-overlay);max-height:90vh;overflow-y:auto;animation:pop .2s ease}
+  .modal-head{display:flex;align-items:center;gap:12px;margin-bottom:18px}
+  .modal-icon{width:40px;height:40px;border-radius:12px;background:var(--grad-brand);color:#fff;display:flex;align-items:center;justify-content:center;font-size:19px;flex-shrink:0}
+  .modal-title{font-family:var(--font-display);font-size:21px;font-weight:800;letter-spacing:-.3px}
+  .modal-foot{display:flex;justify-content:flex-end;gap:8px;margin-top:20px}
+
+  /* ===== TOAST ===== */
+  .toast-wrap{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(160%);z-index:400;background:var(--bg-2);border:1px solid var(--line-2);border-left:4px solid var(--accent);border-radius:var(--r-md);padding:14px 18px;display:flex;align-items:center;gap:14px;box-shadow:var(--shadow-3);transition:transform .34s cubic-bezier(.2,.8,.2,1);max-width:560px}
+  .toast-wrap.visible{transform:translateX(-50%) translateY(0)}
+  .toast-wrap.success{border-left-color:var(--green)} .toast-wrap.info{border-left-color:var(--blue)} .toast-wrap.warn{border-left-color:var(--orange)} .toast-wrap.error{border-left-color:var(--red)}
+  .toast-icon{width:32px;height:32px;border-radius:10px;background:var(--accent-soft);color:var(--accent);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:15px;font-weight:700}
+  .toast-wrap.success .toast-icon{background:var(--green-soft);color:var(--green)} .toast-wrap.info .toast-icon{background:var(--blue-soft);color:var(--blue)} .toast-wrap.warn .toast-icon{background:var(--orange-soft);color:var(--orange)} .toast-wrap.error .toast-icon{background:var(--red-soft);color:var(--red)}
+  .toast-body{display:flex;flex-direction:column;gap:2px}
+  .toast-title{font-size:13px;font-weight:700}
+  .toast-sub{font-size:11.5px;color:var(--text-2)}
+  .toast-action{margin-left:6px;padding:7px 13px;background:var(--bg-3);color:var(--text);border:1px solid var(--line-2);border-radius:var(--r-sm);font-size:12px;font-weight:600;white-space:nowrap}
+  .toast-action:hover{background:var(--accent);color:#fff;border-color:var(--accent)}
+
+  /* ===== AI OVERLAY ===== */
+  .ai-overlay{position:fixed;inset:0;background:var(--backdrop);backdrop-filter:blur(8px);z-index:350;display:none;align-items:center;justify-content:center;padding:20px}
+  .ai-overlay.open{display:flex;animation:fadeIn .25s ease}
+  .ai-overlay-box{max-width:520px;width:100%;text-align:center;padding:40px;background:linear-gradient(180deg,var(--bg-2),var(--bg-3));border:1px solid var(--line-2);border-radius:var(--r-lg);box-shadow:var(--shadow-overlay);position:relative;overflow:hidden}
+  .ai-overlay-box::before{content:'';position:absolute;top:-50%;left:-50%;width:200%;height:200%;background:conic-gradient(from 0deg,transparent,var(--accent-soft),transparent 30%);animation:spin 4s linear infinite}
+  .ai-overlay-box > *{position:relative;z-index:1}
+  @keyframes spin{to{transform:rotate(360deg)}}
+  .ai-sparkle{font-size:52px;margin-bottom:12px;animation:pulse 1.4s ease-in-out infinite}
+  @keyframes pulse{0%,100%{transform:scale(1);opacity:1}50%{transform:scale(1.1);opacity:.85}}
+  .ai-title{font-family:var(--font-display);font-size:23px;font-weight:800;margin-bottom:6px}
+  .ai-sub{color:var(--text-2);font-size:13px;margin-bottom:22px}
+  .ai-steps{text-align:left;display:flex;flex-direction:column;gap:9px;max-width:360px;margin:0 auto;font-family:var(--font-mono);font-size:12.5px}
+  .ai-step{display:flex;align-items:center;gap:10px;color:var(--text-3);opacity:.5;transition:.3s}
+  .ai-step.active{opacity:1;color:var(--accent)} .ai-step.done{opacity:1;color:var(--green)}
+  .ai-step::before{content:'○';width:14px;text-align:center}
+  .ai-step.active::before{content:'◐';animation:spin 1s linear infinite}
+  .ai-step.done::before{content:'●';color:var(--green)}
+  .ai-progress{height:4px;background:var(--bg-4);border-radius:2px;margin-top:22px;overflow:hidden}
+  .ai-progress > div{height:100%;background:var(--grad-brand);width:0;transition:width .35s ease}
+
+  /* ===== SEARCH (⌘K) ===== */
+  .search-backdrop{position:fixed;inset:0;background:var(--backdrop);backdrop-filter:blur(5px);z-index:410;display:none;align-items:flex-start;justify-content:center;padding-top:13vh}
+  .search-backdrop.open{display:flex;animation:fadeIn .15s ease}
+  .search-palette{background:var(--bg-2);border:1px solid var(--line-2);border-radius:var(--r-lg);width:100%;max-width:600px;box-shadow:var(--shadow-overlay);overflow:hidden;animation:pop .18s ease}
+  .search-input-wrap{display:flex;align-items:center;gap:11px;padding:16px 20px;border-bottom:1px solid var(--line)}
+  .search-input-wrap svg{width:18px;height:18px;color:var(--text-3)}
+  .search-input-wrap input{flex:1;background:transparent;border:none;color:var(--text);font-size:15px;outline:none}
+  .search-input-wrap kbd{font-family:var(--font-mono);font-size:11px;padding:3px 8px;background:var(--bg-4);border:1px solid var(--line);border-radius:5px;color:var(--text-3)}
+  .search-results{max-height:56vh;overflow-y:auto;padding:8px}
+  .search-section{padding:8px 14px 4px;font-size:10px;text-transform:uppercase;letter-spacing:1.2px;color:var(--text-3);font-weight:700}
+  .search-item{display:flex;align-items:center;gap:12px;padding:10px 14px;border-radius:var(--r-sm);cursor:pointer;color:var(--text-2);transition:.1s}
+  .search-item:hover,.search-item.active{background:var(--bg-3);color:var(--text)}
+  .search-item .si-ic{width:28px;height:28px;border-radius:8px;background:var(--bg-3);display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0}
+  .search-item.active .si-ic{background:var(--accent-soft)}
+  .search-item .si-text{flex:1;min-width:0}
+  .search-item .si-text strong{display:block;font-size:13.5px;font-weight:600;color:var(--text)}
+  .search-item .si-text span{font-size:11.5px;color:var(--text-3)}
+  .search-item .si-tag{font-size:10px;color:var(--text-3);background:var(--bg-3);padding:2px 8px;border-radius:6px;text-transform:uppercase;letter-spacing:.5px;font-weight:700}
+
+  /* hero / banners */
+  .scope-banner{display:flex;align-items:center;gap:14px;padding:12px 16px;border-radius:var(--r-md);margin-bottom:20px;font-size:13px;border:1px solid var(--line);background:var(--bg-2)}
+  .scope-banner .sb-ic{width:34px;height:34px;border-radius:10px;background:var(--grad-brand);display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0}
+  .scope-banner strong{color:var(--text)}
+  .scope-banner .sb-spacer{flex:1}
+
+  .empty{padding:50px 20px;text-align:center;color:var(--text-3);font-size:13.5px}
+  .empty .em-ic{font-size:40px;margin-bottom:10px}
+
+  .divider{height:1px;background:var(--line);margin:20px 0}
+  .list-plain{display:flex;flex-direction:column}
+  .list-plain > div{display:flex;align-items:center;gap:12px;padding:11px 0;border-bottom:1px solid var(--line)}
+  .list-plain > div:last-child{border-bottom:none}
+
+  /* ===== LOGIN ===== */
+  .login-shell{display:flex;min-height:100vh;width:100%;position:fixed;inset:0;z-index:500;overflow:auto;background:var(--bg)}
+  .login-shell.hidden{display:none}
+  .app-locked .sidebar,.app-locked .main,.app-locked .toast-wrap{display:none!important}
+  .login-left{flex:1;padding:52px;display:flex;flex-direction:column;justify-content:space-between;position:relative;overflow:hidden;background:linear-gradient(150deg,#2a0f4d,#4c1d95 45%,#7c1d5b);color:#fff}
+  .login-left::before{content:'';position:absolute;inset:0;background:radial-gradient(circle at 80% 15%,rgba(229,57,127,.4),transparent 45%),radial-gradient(circle at 15% 85%,rgba(168,85,247,.35),transparent 45%)}
+  .login-confetti{position:absolute;inset:0;opacity:.5;pointer-events:none}
+  .login-left > *{position:relative;z-index:1}
+  .login-brand{display:flex;align-items:center;gap:12px}
+  .login-brand .lb-mark{width:44px;height:44px;border-radius:13px;background:rgba(255,255,255,.14);backdrop-filter:blur(6px);display:flex;align-items:center;justify-content:center;font-size:22px;border:1px solid rgba(255,255,255,.2)}
+  .login-brand .lb-name{font-family:var(--font-display);font-size:26px;font-weight:800}
+  .login-brand .lb-sub{font-size:10px;letter-spacing:2px;text-transform:uppercase;opacity:.8;margin-top:2px}
+  .login-hero{margin-top:auto}
+  .login-eyebrow{font-size:11px;letter-spacing:2.5px;text-transform:uppercase;font-weight:700;margin-bottom:16px;opacity:.9}
+  .login-headline{font-family:var(--font-display);font-size:52px;font-weight:800;line-height:1.04;letter-spacing:-1.5px;margin-bottom:18px}
+  .login-headline em{font-style:italic;color:#ffd9ec}
+  .login-sub{font-size:15px;opacity:.85;max-width:480px;line-height:1.6;margin-bottom:34px}
+  .login-feats{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;max-width:520px}
+  .login-feat{display:flex;gap:11px;align-items:flex-start;padding:13px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.14);border-radius:var(--r-md);backdrop-filter:blur(6px)}
+  .login-feat-ic{font-size:19px}
+  .login-feat-txt strong{display:block;font-size:13px;font-weight:700;margin-bottom:2px}
+  .login-feat-txt span{font-size:11.5px;opacity:.8;line-height:1.4}
+  .login-foot{font-size:11px;opacity:.7;margin-top:32px}
+  .login-right{width:460px;padding:52px 48px;display:flex;flex-direction:column;justify-content:center;background:var(--bg-2)}
+  .login-form-head h2{font-family:var(--font-display);font-size:28px;font-weight:800;margin-bottom:8px}
+  .login-form-head p{color:var(--text-3);font-size:13.5px;margin-bottom:28px}
+  .login-form .field{margin-bottom:15px}
+  .login-form input{padding:12px 14px;font-size:14px}
+  .login-row{display:flex;justify-content:space-between;align-items:center;margin:16px 0;font-size:12.5px}
+  .login-row label{display:flex;align-items:center;gap:7px;color:var(--text-2);cursor:pointer}
+  .login-row a{color:var(--accent);font-weight:600}
+  .login-btn{width:100%;justify-content:center;margin-top:8px;padding:13px}
+  .login-or{display:flex;align-items:center;gap:10px;margin:22px 0;color:var(--text-3);font-size:11px;text-transform:uppercase;letter-spacing:1px}
+  .login-or::before,.login-or::after{content:'';flex:1;height:1px;background:var(--line)}
+  .login-quick{display:flex;flex-direction:column;gap:8px}
+  .login-quick-btn{padding:11px 14px;background:var(--bg-3);border:1px solid var(--line);border-radius:var(--r-sm);display:flex;align-items:center;gap:11px;font-size:13px;color:var(--text-2);transition:.15s;text-align:left;width:100%}
+  .login-quick-btn:hover{border-color:var(--accent);color:var(--text);background:var(--bg-2)}
+  .login-theme-toggle{position:absolute;top:20px;right:20px;z-index:3;color:#fff}
+
+  /* ===== RESPONSIVE ===== */
+  .sidebar-backdrop{position:fixed;inset:0;background:var(--backdrop);backdrop-filter:blur(2px);opacity:0;pointer-events:none;transition:opacity .2s;z-index:45}
+  .sidebar-backdrop.open{opacity:1;pointer-events:auto}
+  @media (max-width:1080px){ .kpi-grid{grid-template-columns:repeat(2,1fr)} }
+  @media (max-width:980px){
+    .sidebar{transform:translateX(-100%)}
+    .sidebar.open{transform:translateX(0);box-shadow:var(--shadow-3)}
+    .main{margin-left:0}
+    .nav-toggle{display:flex}
+    .login-left{display:none}
+    .login-right{width:100%}
+    .login-shell{flex-direction:column}
+    .form-grid,.form-grid.cols-3{grid-template-columns:1fr}
+  }
+  @media (max-width:760px){
+    .page{padding:20px 16px 60px}
+    .kpi-grid{grid-template-columns:1fr}
+    .page-title{font-size:24px}
+    .venue-info span{display:none}
+    .lead-card{grid-template-columns:1fr}
+    .lead-actions{flex-direction:row;align-items:center;min-width:0}
+    .cal-cell{min-height:64px}
+    .installment-row{grid-template-columns:32px 1fr auto}
+    .hide-sm{display:none!important}
+  }
+</style>
+</head>
+<body class="app-locked">
+
+<div class="sidebar-backdrop" id="sidebarBackdrop"></div>
+
+<!-- ===================== LOGIN ===================== -->
+<div class="login-shell" id="loginShell">
+  <button class="icon-btn theme-toggle login-theme-toggle" title="Alternar tema" aria-label="Alternar tema">
+    <svg class="ic-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+    <svg class="ic-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
+  </button>
+  <div class="login-left">
+    <div class="login-brand">
+      <div class="lb-mark">🥂</div>
+      <div><div class="lb-name">Gala</div><div class="lb-sub">CRM para casas de festa</div></div>
+    </div>
+    <div class="login-hero">
+      <div class="login-eyebrow">O CRM que entende de festa</div>
+      <h1 class="login-headline">Do primeiro oi<br>ao <em>último brinde</em>.</h1>
+      <p class="login-sub">Um só lugar para lotar a agenda dos seus salões, qualificar cada lead pelo WhatsApp, cobrar as parcelas no Pix na hora certa e entregar festas inesquecíveis — sem planilha, sem data furada.</p>
+      <div class="login-feats">
+        <div class="login-feat"><div class="login-feat-ic">🤖</div><div class="login-feat-txt"><strong>Agente de IA no WhatsApp</strong><span>Qualifica o lead e já cria o card no funil</span></div></div>
+        <div class="login-feat"><div class="login-feat-ic">💸</div><div class="login-feat-txt"><strong>Cobrança no Pix</strong><span>A IA cobra a mensalidade no dia certo</span></div></div>
+        <div class="login-feat"><div class="login-feat-ic">🏛️</div><div class="login-feat-txt"><strong>3 salões, 1 painel</strong><span>Visão do dono + visão de cada gerente</span></div></div>
+        <div class="login-feat"><div class="login-feat-ic">🎂</div><div class="login-feat-txt"><strong>Adicionais na hora certa</strong><span>Mesa de bolo, banda e fotógrafo perto do evento</span></div></div>
+      </div>
+    </div>
+    <div class="login-foot">© 2026 Grupo Encanto Eventos · Gala · agente.crm by agente.lab</div>
+  </div>
+  <div class="login-right">
+    <div class="login-form-head">
+      <h2>Bem-vindo de volta 🎉</h2>
+      <p>Entre para acessar o painel dos seus salões.</p>
+    </div>
+    <form class="login-form" id="loginForm">
+      <div class="field"><label>E-mail</label><input type="email" value="ricardo@grupoencanto.com.br" autocomplete="email"></div>
+      <div class="field"><label>Senha</label><input type="password" value="festa2026" autocomplete="current-password"></div>
+      <div class="login-row"><label><input type="checkbox" checked> Manter conectado</label><a href="#" onclick="return false">Esqueci a senha</a></div>
+      <button type="submit" class="btn btn-brand login-btn">Entrar no Gala →</button>
+    </form>
+    <div class="login-or">ou entre como demo</div>
+    <div class="login-quick">
+      <button class="login-quick-btn" data-demo-user="RM"><div class="avatar grad">RM</div><div><strong style="display:block">Ricardo Menezes</strong><span class="text-mut" style="font-size:11px">Dono · visão dos 3 salões</span></div></button>
+      <button class="login-quick-btn" data-demo-user="BF"><div class="avatar">BF</div><div><strong style="display:block">Bianca Farias</strong><span class="text-mut" style="font-size:11px">Gerente · Villa Aurora</span></div></button>
+      <button class="login-quick-btn" data-demo-user="TL"><div class="avatar">TL</div><div><strong style="display:block">Thiago Lemos</strong><span class="text-mut" style="font-size:11px">Comercial · Espaço Jardim</span></div></button>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== SIDEBAR ===================== -->
+<aside class="sidebar" id="sidebar">
+  <div class="brand">
+    <div class="brand-mark">🥂</div>
+    <div class="brand-txt"><span class="brand-name">Gala</span><span class="brand-sub">agente.crm</span></div>
+  </div>
+
+  <div class="nav-group">
+    <div class="nav-group-title">Início</div>
+    <div class="nav-item active" data-route="dashboard">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="9" rx="1"/><rect x="14" y="3" width="7" height="5" rx="1"/><rect x="14" y="12" width="7" height="9" rx="1"/><rect x="3" y="16" width="7" height="5" rx="1"/></svg>
+      Painel
+    </div>
+  </div>
+
+  <div class="nav-group">
+    <div class="nav-group-title">Comercial</div>
+    <div class="nav-item" data-route="funil">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 4h18M6 12h12M10 20h4"/></svg>
+      Funil de Reservas <span class="badge" id="navFunil">12</span>
+    </div>
+    <div class="nav-item" data-route="agenda">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+      Agenda dos Salões
+    </div>
+    <div class="nav-item" data-route="leadinbox">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8z"/></svg>
+      Lead Inbox <span class="badge ai">IA</span>
+    </div>
+  </div>
+
+  <div class="nav-group">
+    <div class="nav-group-title">Clientes & Catálogo</div>
+    <div class="nav-item" data-route="clientes">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+      Clientes
+    </div>
+    <div class="nav-item" data-route="precos">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.59 13.41 13.42 20.58a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><circle cx="7" cy="7" r="1.2"/></svg>
+      Pacotes & Preços
+    </div>
+    <div class="nav-item" data-route="adicionais">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 12v10H4V12M2 7h20v5H2zM12 22V7M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7zM12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"/></svg>
+      Adicionais
+    </div>
+    <div class="nav-item" data-route="estoque">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><path d="M3.27 6.96 12 12.01l8.73-5.05M12 22.08V12"/></svg>
+      Estoque & Equipe
+    </div>
+  </div>
+
+  <div class="nav-group">
+    <div class="nav-group-title">Financeiro</div>
+    <div class="nav-item" data-route="pagamentos">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/></svg>
+      Pagamentos <span class="badge rose" id="navPay">4</span>
+    </div>
+    <div class="nav-item" data-route="financeiro">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+      Financeiro
+    </div>
+  </div>
+
+  <div class="nav-group">
+    <div class="nav-group-title">IA & Crescimento</div>
+    <div class="nav-item" data-route="ia">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a4 4 0 0 1 4 4c1.5 0 3 1.5 3 3.5S17.5 13 16 13M12 2a4 4 0 0 0-4 4c-1.5 0-3 1.5-3 3.5S6.5 13 8 13M12 2v20M8 13a4 4 0 0 0 8 0"/></svg>
+      Agente IA & Marketing <span class="badge ai">IA</span>
+    </div>
+    <div class="nav-item" data-route="relatorios">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+      Relatórios
+    </div>
+  </div>
+
+  <div class="nav-group">
+    <div class="nav-group-title">Sistema</div>
+    <div class="nav-item" data-route="config">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+      Configurações
+    </div>
+  </div>
+
+  <div class="sidebar-foot">
+    <div class="avatar grad" id="sfAvatar">RM</div>
+    <div class="sidebar-foot-info"><strong id="sfName">Ricardo Menezes</strong><span id="sfRole">Dono · 3 salões</span></div>
+  </div>
+</aside>
+
+<!-- ===================== MAIN ===================== -->
+<main class="main">
+  <header class="topbar">
+    <div class="topbar-left">
+      <button class="icon-btn nav-toggle" id="navToggle" aria-label="Menu">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+      </button>
+      <div class="venue-switch" id="venueSwitch">
+        <button class="venue-btn" id="venueBtn">
+          <span class="venue-dot" id="venueDot">🏛️</span>
+          <span class="venue-info"><strong id="venueName">Todos os salões</strong><span id="venueTag">Visão do dono</span></span>
+          <svg class="caret" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+        <div class="venue-menu" id="venueMenu"></div>
+      </div>
+    </div>
+    <div class="topbar-actions">
+      <button class="icon-btn search-trigger" id="searchTrigger" title="Buscar (⌘K)" aria-label="Buscar">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      </button>
+      <button class="icon-btn theme-toggle" id="themeToggle" title="Alternar tema" aria-label="Alternar tema">
+        <svg class="ic-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+        <svg class="ic-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
+      </button>
+      <button class="icon-btn" title="Notificações" aria-label="Notificações">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+        <span class="dot"></span>
+      </button>
+      <button class="btn btn-brand" data-action="new-event">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        <span class="hide-sm">Nova reserva</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- ============ DASHBOARD ============ -->
+  <section class="page active" id="page-dashboard"></section>
+
+  <!-- ============ FUNIL ============ -->
+  <section class="page" id="page-funil">
+    <div class="page-head">
+      <div>
+        <h1 class="page-title">Funil de Reservas</h1>
+        <p class="page-sub" id="funilSub">Arraste os cards entre as etapas · a IA já qualifica os leads que chegam pelo WhatsApp.</p>
+      </div>
+      <div class="page-actions">
+        <button class="btn btn-secondary" data-route="agenda">📅 Ver agenda</button>
+        <button class="btn btn-brand" data-action="new-event"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg> Nova reserva</button>
+      </div>
+    </div>
+    <div class="kanban" id="kanban"></div>
+  </section>
+
+  <section class="page" id="page-agenda"></section>
+  <section class="page" id="page-leadinbox"></section>
+  <section class="page" id="page-evento"></section>
+  <section class="page" id="page-clientes"></section>
+  <section class="page" id="page-precos"></section>
+  <section class="page" id="page-adicionais"></section>
+  <section class="page" id="page-estoque"></section>
+  <section class="page" id="page-pagamentos"></section>
+  <section class="page" id="page-financeiro"></section>
+  <section class="page" id="page-ia"></section>
+  <section class="page" id="page-relatorios"></section>
+  <section class="page" id="page-config"></section>
+
+</main>
+
+<!-- ===================== MODALS / OVERLAYS ===================== -->
+<div class="modal-backdrop" id="newEventModal">
+  <div class="modal">
+    <div class="modal-head">
+      <div class="modal-icon">🎉</div>
+      <div><div class="modal-title">Nova reserva</div><div class="text-sm text-mut">Crie o card no funil — a IA cuida do resto.</div></div>
+    </div>
+    <div class="form-grid">
+      <div class="field"><label>Cliente</label><input placeholder="Nome do cliente"></div>
+      <div class="field"><label>WhatsApp</label><input placeholder="(00) 00000-0000"></div>
+      <div class="field"><label>Tipo de festa</label><select><option>Casamento</option><option>15 Anos</option><option>Aniversário</option><option>Corporativo</option><option>Formatura</option></select></div>
+      <div class="field"><label>Salão</label><select id="newEvVenue"></select></div>
+      <div class="field"><label>Data do evento</label><input type="date"></div>
+      <div class="field"><label>Convidados (pax)</label><input type="number" placeholder="150"></div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-secondary" data-close-modal>Cancelar</button>
+      <button class="btn btn-brand" data-close-modal id="createEventBtn">Criar reserva ✦</button>
+    </div>
+  </div>
+</div>
+
+<div class="ai-overlay" id="aiOverlay">
+  <div class="ai-overlay-box">
+    <div class="ai-sparkle">✦</div>
+    <div class="ai-title" id="aiTitle">Gerando proposta com IA</div>
+    <div class="ai-sub" id="aiSub">Montando o pacote perfeito para essa festa…</div>
+    <div class="ai-steps" id="aiSteps"></div>
+    <div class="ai-progress"><div id="aiBar"></div></div>
+  </div>
+</div>
+
+<div class="toast-wrap" id="toast">
+  <div class="toast-icon" id="toastIcon">✓</div>
+  <div class="toast-body"><div class="toast-title" id="toastTitle"></div><div class="toast-sub" id="toastSub"></div></div>
+  <button class="toast-action" id="toastAction">OK</button>
+</div>
+
+<div class="search-backdrop" id="searchBackdrop">
+  <div class="search-palette">
+    <div class="search-input-wrap">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <input id="searchInput" placeholder="Buscar telas, clientes, festas…" autocomplete="off">
+      <kbd>ESC</kbd>
+    </div>
+    <div class="search-results" id="searchResults"></div>
+  </div>
+</div>
+
+<script>
+/* =====================================================================
+   GALA · CRM para casas de festa — engine + data
+   ===================================================================== */
+
+/* ---------- DATA ---------- */
+const VENUES = [
+  { id:'jardim', name:'Espaço Jardim', emoji:'🌿', tag:'Casamentos ao ar livre', cap:300, city:'Zona Sul', manager:'Thiago Lemos', color:'#12a150' },
+  { id:'aurora', name:'Villa Aurora',  emoji:'✨', tag:'Salão nobre · 15 anos', cap:450, city:'Centro', manager:'Bianca Farias', color:'#a855f7' },
+  { id:'terraco',name:'Terraço Miramar',emoji:'🌆', tag:'Rooftop · corporativo', cap:180, city:'Orla', manager:'Camila Duarte', color:'#e5397f' },
+];
+const EVENT_TYPES = {
+  casamento:  { label:'Casamento', emoji:'💍', color:'var(--rose)',   soft:'var(--rose-soft)' },
+  quinze:     { label:'15 Anos',   emoji:'👑', color:'var(--purple)', soft:'var(--purple-soft)' },
+  aniversario:{ label:'Aniversário',emoji:'🎂', color:'var(--gold)',   soft:'var(--gold-soft)' },
+  corporativo:{ label:'Corporativo',emoji:'💼', color:'var(--blue)',   soft:'var(--blue-soft)' },
+  formatura:  { label:'Formatura', emoji:'🎓', color:'var(--teal)',   soft:'var(--teal-soft)' },
+};
+const STAGES = [
+  { id:'novo',       title:'Novo lead',        dot:'var(--blue)' },
+  { id:'qualificado',title:'Qualificado · IA', dot:'var(--purple)' },
+  { id:'visita',     title:'Visita agendada',  dot:'var(--teal)' },
+  { id:'proposta',   title:'Proposta enviada', dot:'var(--gold)' },
+  { id:'reserva',    title:'Reserva · sinal',  dot:'var(--orange)' },
+  { id:'contrato',   title:'Contrato assinado',dot:'var(--green)' },
+];
+// valores em milhares (K)
+let DEALS = [
+  { id:'d1', client:'Marina & Léo',      type:'casamento',  event:'Casamento 220 pax', date:'14 mar 2027', venue:'jardim', pax:220, value:98, stage:'contrato', owner:'TL', sla:'ok', slaTime:'ok', hot:true, wa:true },
+  { id:'d2', client:'Helena Prado',      type:'quinze',     event:'15 Anos · 180 pax', date:'22 ago 2026', venue:'aurora', pax:180, value:76, stage:'reserva', owner:'BF', sla:'ok', slaTime:'sinal pago', hot:true, wa:true },
+  { id:'d3', client:'Grupo Vitae',       type:'corporativo',event:'Convenção anual',   date:'09 set 2026', venue:'terraco',pax:150, value:64, stage:'proposta', owner:'CD', sla:'warn', slaTime:'2 dias', hot:false, wa:false },
+  { id:'d4', client:'Família Nakamura',  type:'aniversario',event:'Bodas de ouro',     date:'30 nov 2026', venue:'aurora', pax:120, value:41, stage:'proposta', owner:'BF', sla:'ok', slaTime:'no prazo', hot:false, wa:true },
+  { id:'d5', client:'Bruna & Carla',     type:'casamento',  event:'Mini wedding',      date:'18 out 2026', venue:'jardim', pax:80,  value:52, stage:'visita', owner:'TL', sla:'ok', slaTime:'sáb 10h', hot:false, wa:true },
+  { id:'d6', client:'Rafael Antunes',    type:'aniversario',event:'40 anos',           date:'05 dez 2026', venue:'terraco',pax:90,  value:33, stage:'visita', owner:'CD', sla:'warn', slaTime:'reagendar', hot:false, wa:true },
+  { id:'d7', client:'Sofia Ribeiro',     type:'quinze',     event:'15 Anos temático',  date:'11 jul 2026', venue:'aurora', pax:200, value:82, stage:'qualificado', owner:'IA', sla:'ok', slaTime:'novo', hot:true, wa:true },
+  { id:'d8', client:'TechNova Ltda',     type:'corporativo',event:'Festa de fim de ano',date:'19 dez 2026',venue:'terraco',pax:170, value:71, stage:'qualificado', owner:'IA', sla:'ok', slaTime:'novo', hot:false, wa:true },
+  { id:'d9', client:'Diego & Paulo',     type:'casamento',  event:'Casamento 300 pax', date:'25 abr 2027', venue:'jardim', pax:300, value:134,stage:'qualificado', owner:'IA', sla:'ok', slaTime:'novo', hot:true, wa:true },
+  { id:'d10',client:'Turma 3ºC Dom Bosco',type:'formatura', event:'Formatura EM',      date:'12 dez 2026', venue:'aurora', pax:250, value:58, stage:'novo', owner:'IA', sla:'ok', slaTime:'agora', hot:false, wa:true },
+  { id:'d11',client:'Amanda Souza',      type:'aniversario',event:'Chá revelação',     date:'02 ago 2026', venue:'terraco',pax:60,  value:19, stage:'novo', owner:'IA', sla:'ok', slaTime:'agora', hot:false, wa:true },
+  { id:'d12',client:'Isabela & Marcos',  type:'casamento',  event:'Casamento',         date:'06 jun 2027', venue:'jardim', pax:190, value:88, stage:'novo', owner:'IA', sla:'late', slaTime:'25h s/ resp', hot:false, wa:true },
+];
+// travas de campo (funil que ensina)
+const DEAL_LOCKS = {
+  d10:'Falta a data confirmada e o número de convidados para avançar.',
+  d11:'Falta o orçamento estimado do cliente.',
+  d12:'Lead sem resposta há 25h (SLA 24h) — retome o contato antes de qualificar.',
+};
+
+const CLIENTS = [
+  { id:'c1', name:'Marina & Léo', type:'casamento', venue:'jardim', phone:'(11) 99812-4455', status:'Contrato', value:98, date:'14 mar 2027', ltv:98, initials:'ML' },
+  { id:'c2', name:'Helena Prado', type:'quinze', venue:'aurora', phone:'(11) 99640-1220', status:'Reserva', value:76, date:'22 ago 2026', ltv:76, initials:'HP' },
+  { id:'c3', name:'Grupo Vitae', type:'corporativo', venue:'terraco', phone:'(11) 3255-9000', status:'Proposta', value:64, date:'09 set 2026', ltv:210, initials:'GV' },
+  { id:'c4', name:'Família Nakamura', type:'aniversario', venue:'aurora', phone:'(11) 98123-7788', status:'Proposta', value:41, date:'30 nov 2026', ltv:41, initials:'FN' },
+  { id:'c5', name:'Bruna & Carla', type:'casamento', venue:'jardim', phone:'(11) 99977-3311', status:'Visita', value:52, date:'18 out 2026', ltv:52, initials:'BC' },
+  { id:'c6', name:'TechNova Ltda', type:'corporativo', venue:'terraco', phone:'(11) 4002-8922', status:'Qualificado', value:71, date:'19 dez 2026', ltv:71, initials:'TN' },
+  { id:'c7', name:'Ana & Ricardo (Cliente 2024)', type:'casamento', venue:'jardim', phone:'(11) 99555-0101', status:'Cliente antigo', value:0, date:'—', ltv:74, initials:'AR' },
+  { id:'c8', name:'Sofia Ribeiro', type:'quinze', venue:'aurora', phone:'(11) 98400-6655', status:'Qualificado', value:82, date:'11 jul 2026', ltv:82, initials:'SR' },
+];
+
+/* pacotes por tipo de festa (preço por pessoa) */
+const PACKAGES = [
+  { id:'p1', type:'casamento',  emoji:'💍', name:'Casamento',   perPax:'R$ 390', base:'R$ 58.500', featured:true,
+    feats:['Salão + cerimônia no jardim','Buffet completo (jantar)','Equipe de garçons e maître','Decoração base + iluminação','Open bar de 4h','Coordenação no dia'] },
+  { id:'p2', type:'quinze', emoji:'👑', name:'15 Anos', perPax:'R$ 320', base:'R$ 48.000', featured:false,
+    feats:['Salão nobre Villa Aurora','Buffet + mesa de doces','DJ e pista iluminada','Camarim da debutante','Valsa e efeitos','Equipe completa'] },
+  { id:'p3', type:'aniversario', emoji:'🎂', name:'Aniversário', perPax:'R$ 240', base:'R$ 21.600', featured:false,
+    feats:['Salão a partir de 4h','Buffet de finger food','Bar de drinks','Decoração temática','Som e luz','Bolo cenográfico incluso'] },
+  { id:'p4', type:'corporativo', emoji:'💼', name:'Corporativo', perPax:'R$ 280', base:'R$ 42.000', featured:false,
+    feats:['Rooftop Terraço Miramar','Coquetel + estações','Estrutura A/V e palco','Recepção e credenciamento','Wi-fi dedicado','Coffee + open bar'] },
+];
+const PLANS = [
+  { name:'Essencial', emoji:'🎈', price:'R$ 149', per:'/mês por salão', featured:false,
+    feats:['1 salão','Funil + agenda','WhatsApp com IA','Contratos digitais'] },
+  { name:'Profissional', emoji:'🥂', price:'R$ 349', per:'/mês por salão', featured:true,
+    feats:['Tudo do Essencial','Cobrança automática no Pix','Adicionais e estoque','Campanhas e promoções','Relatórios por salão'] },
+  { name:'Rede', emoji:'🏛️', price:'R$ 890', per:'/mês · até 5 salões', featured:false,
+    feats:['Tudo do Profissional','Visão consolidada do dono','Gerentes por salão','API + integrações','Suporte prioritário'] },
+];
+
+/* adicionais */
+const ADDONS = [
+  { id:'a1', name:'Mesa de bolo cenográfica', cat:'Decoração', emoji:'🎂', price:'R$ 2.400', lateClose:true, sold:38 },
+  { id:'a2', name:'Fotógrafo + filmagem', cat:'Registro', emoji:'📸', price:'R$ 4.800', lateClose:true, sold:52 },
+  { id:'a3', name:'Painel de LED', cat:'Cenografia', emoji:'📺', price:'R$ 3.600', lateClose:true, sold:24 },
+  { id:'a4', name:'Banda ao vivo (4h)', cat:'Música', emoji:'🎷', price:'R$ 7.500', lateClose:true, sold:19 },
+  { id:'a5', name:'DJ + pista iluminada', cat:'Música', emoji:'🎧', price:'R$ 2.900', lateClose:false, sold:61 },
+  { id:'a6', name:'Open bar premium', cat:'Bebidas', emoji:'🍸', price:'R$ 68/pax', lateClose:false, sold:47 },
+  { id:'a7', name:'Brigadeiro gourmet', cat:'Doces', emoji:'🍫', price:'R$ 14/pax', lateClose:false, sold:73 },
+  { id:'a8', name:'Cabine de fotos', cat:'Registro', emoji:'🖼️', price:'R$ 1.600', lateClose:false, sold:44 },
+  { id:'a9', name:'Decoração floral premium', cat:'Decoração', emoji:'💐', price:'R$ 5.200', lateClose:true, sold:29 },
+  { id:'a10',name:'Valet parking', cat:'Serviços', emoji:'🚗', price:'R$ 1.900', lateClose:false, sold:33 },
+  { id:'a11',name:'Segurança', cat:'Serviços', emoji:'🛡️', price:'R$ 1.200', lateClose:false, sold:36 },
+  { id:'a12',name:'Chuva de prata / efeitos', cat:'Cenografia', emoji:'🎇', price:'R$ 980', lateClose:true, sold:41 },
+];
+
+/* estoque & equipe */
+const INVENTORY = [
+  { cat:'Alimentos', items:[
+    { name:'Kit salgados finos', unit:'cento', stock:210, min:150, cost:'R$ 95' },
+    { name:'Carnes nobres (buffet)', unit:'kg', stock:64, min:80, cost:'R$ 78' },
+    { name:'Mesa de doces', unit:'cento', stock:180, min:120, cost:'R$ 120' },
+    { name:'Finger food', unit:'porção', stock:340, min:200, cost:'R$ 9' },
+  ]},
+  { cat:'Bebidas', items:[
+    { name:'Espumante brut', unit:'garrafa', stock:88, min:60, cost:'R$ 42' },
+    { name:'Cerveja long neck', unit:'caixa', stock:24, min:40, cost:'R$ 96' },
+    { name:'Refrigerante 2L', unit:'un', stock:140, min:100, cost:'R$ 8' },
+    { name:'Água mineral', unit:'fardo', stock:52, min:50, cost:'R$ 18' },
+  ]},
+  { cat:'Equipe', items:[
+    { name:'Garçom', unit:'diária', stock:22, min:16, cost:'R$ 180' },
+    { name:'Maître', unit:'diária', stock:6, min:4, cost:'R$ 320' },
+    { name:'Cozinheiro', unit:'diária', stock:8, min:6, cost:'R$ 300' },
+    { name:'Músico / DJ', unit:'evento', stock:9, min:6, cost:'R$ 900' },
+    { name:'Segurança', unit:'diária', stock:5, min:8, cost:'R$ 240' },
+  ]},
+];
+
+/* pagamentos — parcelas (mensalidade via Pix) */
+const PAYMENTS = [
+  { id:'pay1', client:'Marina & Léo', venue:'jardim', total:98000, paid:6, n:12, value:8167, method:'Pix', next:'05 jul', status:'em dia' },
+  { id:'pay2', client:'Helena Prado', venue:'aurora', total:76000, paid:3, n:10, value:7600, method:'Pix', next:'10 jul', status:'em dia' },
+  { id:'pay3', client:'Grupo Vitae', venue:'terraco', total:64000, paid:2, n:8, value:8000, method:'Pix', next:'01 jul', status:'vence hoje' },
+  { id:'pay4', client:'Família Nakamura', venue:'aurora', total:41000, paid:1, n:8, value:5125, method:'Pix', next:'28 jun', status:'atrasada' },
+];
+
+/* estado global de escopo (salão selecionado) */
+let SCOPE = 'all';
+const scopeVenue = () => VENUES.find(v => v.id === SCOPE);
+const scopedDeals = () => SCOPE==='all' ? DEALS : DEALS.filter(d => d.venue===SCOPE);
+const scopedClients = () => SCOPE==='all' ? CLIENTS : CLIENTS.filter(c => c.venue===SCOPE);
+const scopedPayments = () => SCOPE==='all' ? PAYMENTS : PAYMENTS.filter(p => p.venue===SCOPE);
+const venueName = id => (VENUES.find(v=>v.id===id)||{}).name || '—';
+const venueEmoji = id => (VENUES.find(v=>v.id===id)||{}).emoji || '🏛️';
+
+/* ---------- helpers ---------- */
+function fmtK(k){ return k>=1000 ? 'R$ '+(k/1000).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2})+'M' : 'R$ '+k.toLocaleString('pt-BR')+'K'; }
+function fmtBRL(v){ return 'R$ '+Math.round(v).toLocaleString('pt-BR'); }
+function el(id){ return document.getElementById(id); }
+function typeChip(t){ const e=EVENT_TYPES[t]||{label:t,emoji:'🎉',color:'var(--accent)',soft:'var(--accent-soft)'}; return `<span class="deal-type" style="background:${e.soft};color:${e.color}">${e.emoji} ${e.label}</span>`; }
+function scoreClass(n){ return n>=80?'high':n>=60?'mid':'low'; }
+
+/* ---------- TOAST ---------- */
+let toastTimer=null;
+function toast({title,sub,action,target,kind='success',icon}){
+  const w=el('toast'); w.className='toast-wrap '+kind;
+  el('toastIcon').textContent = icon || (kind==='success'?'✓':kind==='warn'?'!':kind==='error'?'✕':'✦');
+  el('toastTitle').textContent=title; el('toastSub').textContent=sub||'';
+  const act=el('toastAction'); act.textContent=action||'OK';
+  act.onclick=()=>{ hideToast(); if(target) route(target); };
+  requestAnimationFrame(()=>w.classList.add('visible'));
+  clearTimeout(toastTimer); toastTimer=setTimeout(hideToast,5200);
+}
+function hideToast(){ el('toast').classList.remove('visible'); }
+
+/* ---------- KANBAN ---------- */
+function renderKanban(){
+  const root=el('kanban'); if(!root) return;
+  const data=scopedDeals();
+  root.innerHTML = STAGES.map((s,si)=>{
+    const deals=data.filter(d=>d.stage===s.id);
+    const total=deals.reduce((a,d)=>a+d.value,0);
+    return `<div class="kb-col" data-stage="${s.id}" data-stage-index="${si}">
+      <div class="kb-col-head"><div class="kb-col-title"><span class="stage-dot" style="background:${s.dot}"></span>${s.title}</div><span class="kb-col-count">${deals.length}</span></div>
+      <div class="kb-col-total">${total>0?fmtK(total):'—'}</div>
+      ${deals.map(d=>{
+        const locked=DEAL_LOCKS[d.id];
+        return `<div class="deal-card ${d.hot?'hot':''}" draggable="true" data-deal-id="${d.id}">
+          ${typeChip(d.type)}
+          <div class="deal-client">${d.client} ${locked?'<span title="pendências" style="color:var(--red)">🔒</span>':''}</div>
+          <div class="deal-event">${venueEmoji(d.venue)} ${venueName(d.venue)} · ${d.date} · ${d.pax} pax</div>
+          <div class="deal-meta"><span class="deal-value">${fmtK(d.value)}</span><span class="deal-sla ${d.sla}">⏱ ${d.slaTime}</span></div>
+          <div class="deal-foot">
+            <div class="avatar ${d.owner==='IA'?'grad':''}" style="width:24px;height:24px;font-size:10px">${d.owner}</div>
+            ${d.wa?'<span class="pill green dot" style="font-size:9px">WhatsApp</span>':''}
+          </div>
+        </div>`;
+      }).join('') || '<div class="text-mut text-sm" style="padding:8px 2px">Sem cards</div>'}
+    </div>`;
+  }).join('');
+  root.querySelectorAll('.deal-card').forEach(c=>c.addEventListener('click',e=>{ if(c.classList.contains('dragging'))return; openDeal(c.dataset.dealId); }));
+  attachDnD(root);
+  const sub=el('funilSub');
+  if(sub){ const open=data.filter(d=>d.stage!=='contrato'); const tot=open.reduce((a,d)=>a+d.value,0);
+    sub.innerHTML=`<strong>${open.length}</strong> reservas em jogo · <strong>${fmtK(tot)}</strong> em pipeline${SCOPE!=='all'?' · '+scopeVenue().name:''} · arraste os cards entre as etapas.`; }
+  const nf=el('navFunil'); if(nf) nf.textContent=data.filter(d=>d.stage!=='contrato').length;
+}
+function attachDnD(root){
+  let draggedId=null;
+  root.querySelectorAll('.deal-card').forEach(card=>{
+    card.addEventListener('dragstart',e=>{ draggedId=card.dataset.dealId; card.classList.add('dragging'); e.dataTransfer.effectAllowed='move'; e.dataTransfer.setData('text/plain',draggedId); });
+    card.addEventListener('dragend',()=>{ card.classList.remove('dragging'); root.querySelectorAll('.kb-col').forEach(c=>c.classList.remove('drop-target','drop-blocked')); });
+  });
+  root.querySelectorAll('.kb-col').forEach(col=>{
+    col.addEventListener('dragover',e=>{ e.preventDefault(); col.classList.add('drop-target'); });
+    col.addEventListener('dragleave',()=>col.classList.remove('drop-target','drop-blocked'));
+    col.addEventListener('drop',e=>{
+      e.preventDefault();
+      const id=e.dataTransfer.getData('text/plain')||draggedId; if(!id) return;
+      const d=DEALS.find(x=>x.id===id); if(!d) return;
+      const target=col.dataset.stage; if(d.stage===target) return;
+      const ci=STAGES.findIndex(s=>s.id===d.stage), ti=STAGES.findIndex(s=>s.id===target);
+      if(ti>ci && DEAL_LOCKS[id]){
+        col.classList.add('drop-blocked');
+        const card=root.querySelector(`[data-deal-id="${id}"]`);
+        if(card){ card.classList.add('shake-locked'); setTimeout(()=>card.classList.remove('shake-locked'),400); }
+        toast({title:'Ainda não dá para avançar 🔒',sub:DEAL_LOCKS[id],action:'Abrir reserva',target:'evento',kind:'warn'});
+        return;
+      }
+      d.stage=target;
+      if(target==='contrato') toast({title:'Contrato fechado! 🎉',sub:`${d.client} agora está em execução. Onboarding e plano de pagamento disparados.`,action:'Ver pagamentos',target:'pagamentos',kind:'success'});
+      else if(target==='reserva') toast({title:'Sinal registrado ✦',sub:`${d.client} reservou a data. A IA vai cobrar as parcelas no Pix.`,action:'Ver pagamentos',target:'pagamentos',kind:'success'});
+      renderKanban();
+    });
+  });
+}
+let CURRENT_DEAL='d1';
+function openDeal(id){ CURRENT_DEAL=id; route('evento'); }
+
+/* ---------- CHARTS ---------- */
+function cssVar(n){ return getComputedStyle(document.documentElement).getPropertyValue(n).trim(); }
+function ctheme(){ return { text:cssVar('--text-2'),mut:cssVar('--text-3'),grid:cssVar('--line'),tip:cssVar('--bg-4'),accent:cssVar('--accent'),gold:cssVar('--gold'),rose:cssVar('--rose'),green:cssVar('--green'),blue:cssVar('--blue'),purple:cssVar('--purple'),orange:cssVar('--orange'),teal:cssVar('--teal') }; }
+let charts={};
+function makeChart(id,cfg){ const c=el(id); if(!c) return; if(charts[id]){ try{charts[id].destroy();}catch(e){} } charts[id]=new Chart(c,cfg); }
+function renderCharts(){
+  if(!window.Chart) return;
+  const t=ctheme();
+  Chart.defaults.color=t.mut; Chart.defaults.font.family="'Plus Jakarta Sans',sans-serif";
+  const grid={color:t.grid}, noGrid={display:false};
+  // receita
+  if(el('chartRevenue')) makeChart('chartRevenue',{ type:'bar',
+    data:{ labels:['Jan','Fev','Mar','Abr','Mai','Jun'], datasets:[
+      {label:'Realizada',data:[280,340,410,380,455,512],backgroundColor:t.accent,borderRadius:6,barThickness:20},
+      {label:'Projetada',data:[null,null,null,null,null,590],backgroundColor:t.gold,borderRadius:6,barThickness:20} ]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>' '+(c.raw?('R$ '+c.raw+'K'):'')}}},scales:{x:{grid:noGrid,ticks:{color:t.mut}},y:{grid,ticks:{color:t.mut,callback:v=>'R$'+v+'K'}}}} });
+  // ocupação por salão (dashboard)
+  if(el('chartOcc')) makeChart('chartOcc',{ type:'doughnut',
+    data:{ labels:['Ocupado','Disponível'], datasets:[{data:[68,32],backgroundColor:[t.accent,t.grid],borderWidth:0}] },
+    options:{responsive:true,maintainAspectRatio:false,cutout:'72%',plugins:{legend:{display:false}}} });
+  // funil conversão
+  if(el('chartFunnel')) makeChart('chartFunnel',{ type:'bar',
+    data:{ labels:['Lead','Qualif.','Visita','Proposta','Reserva','Contrato'], datasets:[{data:[124,86,54,38,22,15],backgroundColor:[t.blue,t.purple,t.teal,t.gold,t.orange,t.green],borderRadius:5}] },
+    options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{grid,ticks:{color:t.mut}},y:{grid:noGrid,ticks:{color:t.text,font:{weight:'600'}}}}} });
+  // tipos de festa
+  if(el('chartTypes')) makeChart('chartTypes',{ type:'doughnut',
+    data:{ labels:['Casamento','15 Anos','Aniversário','Corporativo','Formatura'], datasets:[{data:[38,24,18,14,6],backgroundColor:[t.rose,t.purple,t.gold,t.blue,t.teal],borderWidth:0}] },
+    options:{responsive:true,maintainAspectRatio:false,cutout:'62%',plugins:{legend:{position:'right',labels:{color:t.text,boxWidth:10,padding:12,font:{size:11}}}}} });
+  // relatorios: faturamento por salão
+  if(el('chartVenues')) makeChart('chartVenues',{ type:'bar',
+    data:{ labels:['Espaço Jardim','Villa Aurora','Terraço Miramar'], datasets:[
+      {label:'Fechado',data:[512,468,331],backgroundColor:t.accent,borderRadius:6,barThickness:34},
+      {label:'Em pipeline',data:[310,240,135],backgroundColor:t.gold,borderRadius:6,barThickness:34} ]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{grid:noGrid,ticks:{color:t.text}},y:{grid,ticks:{color:t.mut,callback:v=>'R$'+v+'K'}}}} });
+  // relatorios: leads por canal
+  if(el('chartChannels')) makeChart('chartChannels',{ type:'line',
+    data:{ labels:['Jan','Fev','Mar','Abr','Mai','Jun'], datasets:[
+      {label:'WhatsApp IA',data:[42,58,71,66,88,102],borderColor:t.green,backgroundColor:'transparent',tension:.35,borderWidth:2.5,pointRadius:3},
+      {label:'Instagram',data:[20,28,24,33,30,38],borderColor:t.rose,backgroundColor:'transparent',tension:.35,borderWidth:2.5,pointRadius:3},
+      {label:'Indicação',data:[12,15,18,14,20,22],borderColor:t.gold,backgroundColor:'transparent',tension:.35,borderWidth:2.5,pointRadius:3} ]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'top',labels:{color:t.text,boxWidth:10,padding:12,font:{size:11}}}},scales:{x:{grid:noGrid,ticks:{color:t.mut}},y:{grid,ticks:{color:t.mut}}}} });
+}
+
+/* ---------- ROUTER ---------- */
+const PAGE_TITLES={ dashboard:'Painel',funil:'Funil de Reservas',agenda:'Agenda dos Salões',leadinbox:'Lead Inbox',evento:'Reserva',clientes:'Clientes',precos:'Pacotes & Preços',adicionais:'Adicionais',estoque:'Estoque & Equipe',pagamentos:'Pagamentos',financeiro:'Financeiro',ia:'Agente IA & Marketing',relatorios:'Relatórios',config:'Configurações' };
+const PAGE_RENDER={};
+function route(name){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  const target=el('page-'+name); if(target) target.classList.add('active');
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  const nav=document.querySelector(`.nav-item[data-route="${name}"]`); if(nav) nav.classList.add('active');
+  const bc=el('bcCurrent'); if(bc) bc.textContent=PAGE_TITLES[name]||name;
+  window.scrollTo({top:0,behavior:'smooth'});
+  if(PAGE_RENDER[name]) PAGE_RENDER[name]();
+  setTimeout(renderCharts,40);
+}
+
+/* ---------- THEME ---------- */
+const THEME_KEY='gala.theme';
+function applyTheme(theme){
+  const html=document.documentElement;
+  if(theme==='dark') html.setAttribute('data-theme','dark'); else html.removeAttribute('data-theme');
+  setTimeout(renderCharts,30);
+}
+document.querySelectorAll('.theme-toggle').forEach(b=>b.addEventListener('click',()=>{
+  const next=document.documentElement.getAttribute('data-theme')==='dark'?'light':'dark';
+  try{ localStorage.setItem(THEME_KEY,next); }catch(e){}
+  applyTheme(next);
+}));
+
+/* ---------- VENUE SWITCHER ---------- */
+function renderVenueMenu(){
+  const menu=el('venueMenu');
+  const optAll=`<div class="venue-opt ${SCOPE==='all'?'sel':''}" data-venue="all">
+    <div class="vo-dot" style="background:var(--grad-brand)">🏛️</div>
+    <div class="vo-txt"><strong>Todos os salões</strong><span>Visão consolidada do dono</span></div>
+    <svg class="vo-check" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div>`;
+  const opts=VENUES.map(v=>`<div class="venue-opt ${SCOPE===v.id?'sel':''}" data-venue="${v.id}">
+    <div class="vo-dot" style="background:${v.color}22;color:${v.color}">${v.emoji}</div>
+    <div class="vo-txt"><strong>${v.name}</strong><span>${v.tag} · ${v.manager}</span></div>
+    <svg class="vo-check" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div>`).join('');
+  menu.innerHTML=optAll+'<div class="venue-menu-sep"></div>'+opts;
+  menu.querySelectorAll('.venue-opt').forEach(o=>o.addEventListener('click',()=>{ setScope(o.dataset.venue); el('venueSwitch').classList.remove('open'); }));
+}
+function setScope(id){
+  SCOPE=id;
+  const v=scopeVenue();
+  el('venueName').textContent = id==='all' ? 'Todos os salões' : v.name;
+  el('venueTag').textContent = id==='all' ? 'Visão do dono' : v.tag;
+  el('venueDot').textContent = id==='all' ? '🏛️' : v.emoji;
+  renderVenueMenu();
+  const active=document.querySelector('.nav-item.active')?.dataset.route;
+  if(active && PAGE_RENDER[active]) PAGE_RENDER[active]();
+  renderKanban();
+  setTimeout(renderCharts,40);
+}
+el('venueBtn').addEventListener('click',e=>{ e.stopPropagation(); el('venueSwitch').classList.toggle('open'); });
+document.addEventListener('click',e=>{ if(!el('venueSwitch').contains(e.target)) el('venueSwitch').classList.remove('open'); });
+
+/* ---------- NEW EVENT MODAL ---------- */
+function openModal(id){ el(id).classList.add('open'); }
+function closeModal(id){ el(id).classList.remove('open'); }
+document.querySelectorAll('[data-action="new-event"]').forEach(b=>b.addEventListener('click',()=>{
+  const sel=el('newEvVenue'); if(sel && !sel.dataset.filled){ sel.innerHTML=VENUES.map(v=>`<option value="${v.id}">${v.emoji} ${v.name}</option>`).join(''); sel.dataset.filled='1'; }
+  openModal('newEventModal');
+}));
+document.addEventListener('click',e=>{ const m=e.target.closest('[data-close-modal]'); if(m) closeModal('newEventModal'); if(e.target.classList.contains('modal-backdrop')) e.target.classList.remove('open'); });
+el('createEventBtn').addEventListener('click',()=>toast({title:'Reserva criada 🎉',sub:'Card adicionado ao funil em "Novo lead". A IA já vai iniciar a qualificação pelo WhatsApp.',action:'Abrir funil',target:'funil',kind:'success'}));
+
+/* ---------- AI OVERLAY ---------- */
+function playAI(title,sub,steps,onDone){
+  el('aiTitle').textContent=title; el('aiSub').textContent=sub;
+  const box=el('aiSteps'); box.innerHTML=steps.map(s=>`<div class="ai-step">${s}</div>`).join('');
+  el('aiBar').style.width='0'; el('aiOverlay').classList.add('open');
+  const nodes=[...box.children]; let i=0;
+  const tick=()=>{
+    if(i>0) nodes[i-1].className='ai-step done';
+    if(i<nodes.length){ nodes[i].className='ai-step active'; el('aiBar').style.width=Math.round((i+1)/nodes.length*100)+'%'; i++; setTimeout(tick,620); }
+    else setTimeout(()=>{ el('aiOverlay').classList.remove('open'); onDone&&onDone(); },420);
+  };
+  setTimeout(tick,350);
+}
+
+/* ---------- SEARCH (⌘K) ---------- */
+const SEARCH_PAGES=[
+  {label:'Painel',desc:'KPIs, ocupação e alertas',route:'dashboard',ic:'📊',tag:'tela'},
+  {label:'Funil de Reservas',desc:'Kanban de leads e festas',route:'funil',ic:'🎯',tag:'tela'},
+  {label:'Agenda dos Salões',desc:'Calendário e conflitos de data',route:'agenda',ic:'📅',tag:'tela'},
+  {label:'Lead Inbox',desc:'WhatsApp qualificado pela IA',route:'leadinbox',ic:'💬',tag:'tela'},
+  {label:'Clientes',desc:'Base e fichas',route:'clientes',ic:'👥',tag:'tela'},
+  {label:'Pacotes & Preços',desc:'Preço por tipo de festa',route:'precos',ic:'🏷️',tag:'tela'},
+  {label:'Adicionais',desc:'Bolo, banda, fotógrafo…',route:'adicionais',ic:'🎁',tag:'tela'},
+  {label:'Estoque & Equipe',desc:'Comida, bebida, garçom',route:'estoque',ic:'📦',tag:'tela'},
+  {label:'Pagamentos',desc:'Parcelas no Pix + cobrança IA',route:'pagamentos',ic:'💸',tag:'tela'},
+  {label:'Financeiro',desc:'Margem por evento',route:'financeiro',ic:'📈',tag:'tela'},
+  {label:'Agente IA & Marketing',desc:'WhatsApp, cobrança, promoções',route:'ia',ic:'🤖',tag:'tela'},
+  {label:'Relatórios',desc:'Desempenho por salão',route:'relatorios',ic:'📑',tag:'tela'},
+  {label:'Configurações',desc:'Salões, funis, integrações',route:'config',ic:'⚙️',tag:'tela'},
+];
+function openSearch(){ el('searchBackdrop').classList.add('open'); el('searchInput').value=''; renderSearch(''); setTimeout(()=>el('searchInput').focus(),40); }
+function closeSearch(){ el('searchBackdrop').classList.remove('open'); }
+function renderSearch(q){
+  q=q.toLowerCase();
+  const pages=SEARCH_PAGES.filter(p=>!q||p.label.toLowerCase().includes(q)||p.desc.toLowerCase().includes(q));
+  const clients=CLIENTS.filter(c=>q&&c.name.toLowerCase().includes(q));
+  let html='';
+  if(pages.length){ html+='<div class="search-section">Telas</div>'+pages.map((p,i)=>`<div class="search-item ${i===0?'active':''}" data-route="${p.route}"><div class="si-ic">${p.ic}</div><div class="si-text"><strong>${p.label}</strong><span>${p.desc}</span></div><span class="si-tag">${p.tag}</span></div>`).join(''); }
+  if(clients.length){ html+='<div class="search-section">Clientes</div>'+clients.map(c=>`<div class="search-item" data-route="clientes"><div class="si-ic">${venueEmoji(c.venue)}</div><div class="si-text"><strong>${c.name}</strong><span>${(EVENT_TYPES[c.type]||{}).label||c.type} · ${venueName(c.venue)}</span></div><span class="si-tag">${c.status}</span></div>`).join(''); }
+  if(!html) html='<div class="empty"><div class="em-ic">🔍</div>Nada encontrado para "'+q+'"</div>';
+  el('searchResults').innerHTML=html;
+  el('searchResults').querySelectorAll('.search-item').forEach(it=>it.addEventListener('click',()=>{ route(it.dataset.route); closeSearch(); }));
+}
+el('searchTrigger').addEventListener('click',openSearch);
+el('searchInput').addEventListener('input',e=>renderSearch(e.target.value));
+el('searchBackdrop').addEventListener('click',e=>{ if(e.target===el('searchBackdrop')) closeSearch(); });
+document.addEventListener('keydown',e=>{
+  if((e.metaKey||e.ctrlKey)&&e.key.toLowerCase()==='k'){ e.preventDefault(); el('searchBackdrop').classList.contains('open')?closeSearch():openSearch(); }
+  if(e.key==='Escape'){ closeSearch(); document.querySelectorAll('.modal-backdrop.open').forEach(m=>m.classList.remove('open')); el('aiOverlay').classList.remove('open'); }
+});
+
+/* ---------- MOBILE NAV ---------- */
+const sidebar=el('sidebar'), backdrop=el('sidebarBackdrop');
+function openNav(){ sidebar.classList.add('open'); backdrop.classList.add('open'); document.body.classList.add('nav-locked'); }
+function closeNav(){ sidebar.classList.remove('open'); backdrop.classList.remove('open'); document.body.classList.remove('nav-locked'); }
+el('navToggle').addEventListener('click',()=>sidebar.classList.contains('open')?closeNav():openNav());
+backdrop.addEventListener('click',closeNav);
+
+/* ---------- NAV WIRING ---------- */
+function wireRoutes(){
+  document.querySelectorAll('[data-route]').forEach(el2=>{
+    if(el2.dataset.wired) return; el2.dataset.wired='1';
+    el2.addEventListener('click',e=>{ e.preventDefault(); route(el2.dataset.route); if(window.innerWidth<=980) closeNav(); });
+  });
+}
+
+/* ---------- LOGIN ---------- */
+const LOGIN_USERS={ RM:{name:'Ricardo Menezes',role:'Dono · 3 salões',scope:'all'}, BF:{name:'Bianca Farias',role:'Gerente · Villa Aurora',scope:'aurora'}, TL:{name:'Thiago Lemos',role:'Comercial · Espaço Jardim',scope:'jardim'} };
+function enterApp(initials){
+  const u=LOGIN_USERS[initials]||LOGIN_USERS.RM;
+  el('sfAvatar').textContent=initials; el('sfName').textContent=u.name; el('sfRole').textContent=u.role;
+  el('loginShell').classList.add('hidden'); document.body.classList.remove('app-locked');
+  setScope(u.scope); route('dashboard');
+}
+el('loginForm').addEventListener('submit',e=>{ e.preventDefault(); enterApp('RM'); });
+document.querySelectorAll('[data-demo-user]').forEach(b=>b.addEventListener('click',()=>enterApp(b.dataset.demoUser)));
+
+/* =====================================================================
+   PAGE MODULES
+   ===================================================================== */
+const VENUE_STATS={
+  all:    { rev:'R$ 1,31M', occ:68, recv:'R$ 96K', events:24, delta:'+18,2%' },
+  jardim: { rev:'R$ 512K',  occ:74, recv:'R$ 41K', events:8,  delta:'+12,4%' },
+  aurora: { rev:'R$ 468K',  occ:81, recv:'R$ 38K', events:9,  delta:'+22,0%' },
+  terraco:{ rev:'R$ 331K',  occ:52, recv:'R$ 17K', events:7,  delta:'+9,1%' },
+};
+const UPCOMING=[
+  { d:'04', m:'JUL', venue:'jardim', title:'Marina & Léo · degustação', sub:'Prova do menu · 12h', color:'var(--green)', pill:'Confirmado', pk:'green' },
+  { d:'11', m:'JUL', venue:'aurora', title:'Sofia Ribeiro · 15 Anos', sub:'200 pax · tema Paris', color:'var(--purple)', pill:'Montagem sex', pk:'amber' },
+  { d:'19', m:'JUL', venue:'terraco',title:'Amanda · Chá revelação', sub:'60 pax · rooftop', color:'var(--rose)', pill:'Sinal pago', pk:'blue' },
+  { d:'26', m:'JUL', venue:'aurora', title:'Família Nakamura · Bodas', sub:'120 pax · jantar', color:'var(--gold)', pill:'A confirmar', pk:'purple' },
+];
+
+/* ---------- DASHBOARD ---------- */
+function renderDashboard(){
+  const s=VENUE_STATS[SCOPE]; const isAll=SCOPE==='all'; const v=scopeVenue();
+  const open=scopedDeals().filter(d=>d.stage!=='contrato'); const pipe=open.reduce((a,d)=>a+d.value,0);
+  const upc=isAll?UPCOMING:UPCOMING.filter(u=>u.venue===SCOPE);
+  el('page-dashboard').innerHTML=`
+    <div class="page-head">
+      <div>
+        <h1 class="page-title">Boa tarde, ${isAll?'Ricardo':v.manager.split(' ')[0]} <span class="emoji">👋</span></h1>
+        <p class="page-sub">Terça-feira, 30 de junho · ${isAll?'<strong>visão dos 3 salões</strong>':'<strong>'+v.name+'</strong>'} · <strong>5 tarefas</strong> para hoje · ${open.length} reservas no funil · 2 leads novos da <a data-route="ia" style="color:var(--accent)">IA</a></p>
+      </div>
+      <div class="page-actions">
+        <button class="btn btn-secondary">Junho 2026 ▾</button>
+        <button class="btn btn-secondary">Exportar</button>
+        <button class="btn btn-brand" onclick="openModal('newEventModal')">✦ Nova reserva</button>
+      </div>
+    </div>
+
+    <div class="scope-banner">
+      <div class="sb-ic">${isAll?'🏛️':v.emoji}</div>
+      <div>${isAll?'Você está vendo <strong>todos os salões</strong> consolidados.':'<strong>'+v.name+'</strong> · '+v.tag+' · gerência de <strong>'+v.manager+'</strong>'}
+      <div class="text-sm text-mut">${isAll?'Troque o salão no seletor acima para a visão do gerente.':'Capacidade '+v.cap+' convidados · '+v.city}</div></div>
+      <div class="sb-spacer"></div>
+      <span class="pill green dot">Sistema saudável</span>
+    </div>
+
+    <div class="grid kpi-grid">
+      <div class="kpi green"><div class="kpi-label">Receita do mês</div><div class="kpi-value">${s.rev}</div><div class="kpi-meta"><span class="kpi-delta up">▲ ${s.delta}</span> vs. maio</div></div>
+      <div class="kpi"><div class="kpi-label">Taxa de ocupação</div><div class="kpi-value">${s.occ}%</div><div class="kpi-meta">dos fins de semana com festa</div></div>
+      <div class="kpi gold"><div class="kpi-label">Pipeline aberto</div><div class="kpi-value">${fmtK(pipe)}</div><div class="kpi-meta"><span class="kpi-delta up">▲ ${open.length}</span> reservas em negociação</div></div>
+      <div class="kpi rose"><div class="kpi-label">A receber no Pix</div><div class="kpi-value">${s.recv}</div><div class="kpi-meta">este mês · <a data-route="pagamentos" style="color:var(--rose)">ver parcelas</a></div></div>
+    </div>
+
+    <div class="card mt-18" style="border-left:3px solid var(--accent)">
+      <div class="card-head"><div><div class="card-title">🎯 Suas tarefas de hoje</div><div class="card-sub">O funil sinaliza onde as festas não avançam</div></div><span class="pill amber">5 pendências</span></div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:10px">
+        <a data-route="leadinbox" style="display:flex;gap:10px;padding:11px;background:var(--bg-3);border-radius:var(--r-sm);border-left:3px solid var(--blue);cursor:pointer"><div style="font-size:18px">💬</div><div><div style="font-weight:700;font-size:12.5px">2 leads qualificados pela IA</div><div class="text-sm text-mut">TechNova e Sofia · aprovar para o funil</div></div></a>
+        <a onclick="openDeal('d3')" style="display:flex;gap:10px;padding:11px;background:var(--bg-3);border-radius:var(--r-sm);border-left:3px solid var(--gold);cursor:pointer"><div style="font-size:18px">📄</div><div><div style="font-weight:700;font-size:12.5px">Proposta · Grupo Vitae</div><div class="text-sm text-mut">Enviada há 2 dias · fazer follow-up</div></div></a>
+        <a data-route="pagamentos" style="display:flex;gap:10px;padding:11px;background:var(--bg-3);border-radius:var(--r-sm);border-left:3px solid var(--red);cursor:pointer"><div style="font-size:18px">💸</div><div><div style="font-weight:700;font-size:12.5px">Nakamura · parcela atrasada</div><div class="text-sm text-mut">A IA já enviou 2 lembretes no Pix</div></div></a>
+        <a data-route="agenda" style="display:flex;gap:10px;padding:11px;background:var(--bg-3);border-radius:var(--r-sm);border-left:3px solid var(--purple);cursor:pointer"><div style="font-size:18px">🎂</div><div><div style="font-weight:700;font-size:12.5px">Sofia · fechar mesa do bolo</div><div class="text-sm text-mut">Faltam 12 dias · fechar adicionais</div></div></a>
+        <a onclick="openDeal('d12')" style="display:flex;gap:10px;padding:11px;background:var(--bg-3);border-radius:var(--r-sm);border-left:3px solid var(--orange);cursor:pointer"><div style="font-size:18px">⏰</div><div><div style="font-weight:700;font-size:12.5px">Isabela & Marcos · sem resposta</div><div class="text-sm text-mut">25h sem retorno · SLA estourado</div></div></a>
+      </div>
+    </div>
+
+    <div class="grid mt-18" style="grid-template-columns:2fr 1fr">
+      <div class="card">
+        <div class="card-head"><div><div class="card-title">Receita realizada vs. projetada</div><div class="card-sub">Últimos 6 meses · festas entregues + pipeline ponderado</div></div>
+          <div class="row text-sm text-mut"><span class="row"><span style="width:9px;height:9px;background:var(--accent);border-radius:3px"></span>Realizada</span><span class="row"><span style="width:9px;height:9px;background:var(--gold);border-radius:3px"></span>Projetada</span></div></div>
+        <div class="chart-host" style="height:250px"><canvas id="chartRevenue"></canvas></div>
+      </div>
+      <div class="card">
+        <div class="card-head"><div class="card-title">Próximos eventos</div><a data-route="agenda" class="text-sm text-accent">agenda →</a></div>
+        <div style="display:flex;flex-direction:column;gap:10px">
+          ${upc.map(u=>`<div style="display:flex;gap:12px;padding:10px;background:var(--bg-3);border-radius:var(--r-md);border-left:3px solid ${u.color}"><div style="font-family:var(--font-display);font-weight:800;font-size:22px;line-height:.9">${u.d}<div style="font-size:9px;color:var(--text-3);font-weight:600;letter-spacing:1px">${u.m}</div></div><div style="flex:1"><div style="font-weight:700;font-size:12.5px">${u.title}</div><div class="text-sm text-mut">${venueEmoji(u.venue)} ${u.sub}</div><span class="pill ${u.pk} mt-8" style="font-size:9px">${u.pill}</span></div></div>`).join('')||'<div class="empty" style="padding:24px"><div class="em-ic">🎈</div>Sem eventos próximos neste salão</div>'}
+        </div>
+      </div>
+    </div>
+
+    ${isAll?`<div class="grid mt-18" style="grid-template-columns:repeat(3,1fr)">
+      ${VENUES.map(vn=>{ const st=VENUE_STATS[vn.id]; const cnt=DEALS.filter(d=>d.venue===vn.id&&d.stage!=='contrato').length; return `<div class="card" style="cursor:pointer" onclick="setScope('${vn.id}')">
+        <div class="row" style="justify-content:space-between"><div class="row"><span class="venue-dot" style="background:${vn.color}22;color:${vn.color};border-radius:9px">${vn.emoji}</span><div><div style="font-weight:700">${vn.name}</div><div class="text-sm text-mut">${vn.manager}</div></div></div><span class="pill accent">${st.occ}%</span></div>
+        <div class="ranking-bar mt-12"><div style="width:${st.occ}%"></div></div>
+        <div class="row mt-12" style="justify-content:space-between"><div><div class="text-sm text-mut">Receita mês</div><strong>${st.rev}</strong></div><div style="text-align:right"><div class="text-sm text-mut">No funil</div><strong>${cnt} reservas</strong></div></div>
+      </div>`;}).join('')}
+    </div>`:''}
+
+    <div class="grid mt-18" style="grid-template-columns:1fr 1fr 1fr">
+      <div class="card"><div class="card-head"><div class="card-title">Tipos de festa</div></div><div class="chart-host" style="height:190px"><canvas id="chartTypes"></canvas></div></div>
+      <div class="card"><div class="card-head"><div class="card-title">Top vendedores</div><span class="pill accent">mês</span></div>
+        <div style="display:flex;flex-direction:column;gap:11px">
+          <div class="row"><div class="avatar" style="background:var(--grad-brand);color:#fff">BF</div><div style="flex:1"><div style="font-weight:600;font-size:13px">Bianca Farias</div><div class="text-sm text-mut">9 festas · R$ 468K</div></div><strong class="mono text-accent">118%</strong></div>
+          <div class="row"><div class="avatar">TL</div><div style="flex:1"><div style="font-weight:600;font-size:13px">Thiago Lemos</div><div class="text-sm text-mut">8 festas · R$ 512K</div></div><strong class="mono">102%</strong></div>
+          <div class="row"><div class="avatar">CD</div><div style="flex:1"><div style="font-weight:600;font-size:13px">Camila Duarte</div><div class="text-sm text-mut">7 festas · R$ 331K</div></div><strong class="mono">84%</strong></div>
+          <div class="row"><div class="avatar grad">IA</div><div style="flex:1"><div style="font-weight:600;font-size:13px">Agente IA</div><div class="text-sm text-mut">qualificou 46 leads</div></div><strong class="mono text-accent">↑</strong></div>
+        </div>
+      </div>
+      <div class="card"><div class="card-head"><div class="card-title">Alertas inteligentes</div><span class="pill red">3</span></div>
+        <div style="display:flex;flex-direction:column;gap:9px">
+          <div onclick="route('agenda')" style="padding:10px;background:var(--red-soft);border-radius:var(--r-sm);border-left:3px solid var(--red);cursor:pointer"><div style="font-weight:700;font-size:12px;color:var(--red)">Conflito de data</div><div class="text-sm text-mut mt-8">Villa Aurora tem 2 pré-reservas para 22/08 · confirme o sinal</div></div>
+          <div onclick="route('pagamentos')" style="padding:10px;background:var(--orange-soft);border-radius:var(--r-sm);border-left:3px solid var(--orange);cursor:pointer"><div style="font-weight:700;font-size:12px;color:var(--orange)">Parcela em atraso</div><div class="text-sm text-mut mt-8">Nakamura · 1ª parcela vencida · IA cobrando no Pix</div></div>
+          <div onclick="route('ia')" style="padding:10px;background:var(--accent-soft);border-radius:var(--r-sm);border-left:3px solid var(--accent);cursor:pointer"><div style="font-weight:700;font-size:12px;color:var(--accent)">Recompra em vista</div><div class="text-sm text-mut mt-8">Ana & Ricardo (2024) · perfil de bodas em ~60 dias</div></div>
+        </div>
+      </div>
+    </div>`;
+  wireRoutes();
+}
+
+/* ---------- AGENDA (calendário) ---------- */
+let calY=2026, calM=6; // julho (0-based)
+const CAL_EVENTS={
+  '2026-07-04':[{v:'jardim',t:'Degustação Marina & Léo'}],
+  '2026-07-11':[{v:'aurora',t:'15 Anos · Sofia'}],
+  '2026-07-12':[{v:'jardim',t:'Casamento Bruna & Carla'}],
+  '2026-07-18':[{v:'terraco',t:'Aniversário Rafael'}],
+  '2026-07-19':[{v:'terraco',t:'Chá revelação Amanda'}],
+  '2026-07-22':[{v:'aurora',t:'Pré-reserva Helena'},{v:'aurora',t:'Pré-reserva TechNova'}],
+  '2026-07-25':[{v:'jardim',t:'Casamento Diego & Paulo'}],
+  '2026-07-26':[{v:'aurora',t:'Bodas Nakamura'}],
+};
+const MONTHS=['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+function renderAgenda(){
+  const first=new Date(calY,calM,1); const startDow=first.getDay(); const days=new Date(calY,calM+1,0).getDate();
+  const cells=[];
+  for(let i=0;i<startDow;i++) cells.push(null);
+  for(let d=1;d<=days;d++) cells.push(d);
+  while(cells.length%7!==0) cells.push(null);
+  const dow=['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'];
+  const venuesShown=SCOPE==='all'?VENUES:VENUES.filter(v=>v.id===SCOPE);
+  let conflicts=0;
+  const grid=cells.map(d=>{
+    if(!d) return '<div class="cal-cell muted"></div>';
+    const iso=`${calY}-${String(calM+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+    let evs=(CAL_EVENTS[iso]||[]).filter(e=>SCOPE==='all'||e.v===SCOPE);
+    const byVenue={}; evs.forEach(e=>byVenue[e.v]=(byVenue[e.v]||0)+1);
+    const hasConflict=Object.values(byVenue).some(n=>n>1); if(hasConflict) conflicts++;
+    const isToday=(calY===2026&&calM===6&&d===1);
+    return `<div class="cal-cell ${isToday?'today':''}">
+      <div class="cal-num">${d}</div>
+      ${evs.map(e=>{ const vv=VENUES.find(x=>x.id===e.v); return `<div class="cal-ev" style="background:${vv.color}" title="${e.t}">${vv.emoji} ${e.t}</div>`; }).join('')}
+      ${hasConflict?'<div class="cal-ev" style="background:var(--red)">⚠ conflito</div>':''}
+    </div>`;
+  }).join('');
+  el('page-agenda').innerHTML=`
+    <div class="page-head">
+      <div><h1 class="page-title">Agenda dos Salões</h1><p class="page-sub">Cada salão só faz uma festa por dia. A IA bloqueia datas em conflito e avisa antes de você reservar duas festas no mesmo espaço.</p></div>
+      <div class="page-actions"><button class="btn btn-secondary" data-route="funil">← Funil</button><button class="btn btn-brand" onclick="openModal('newEventModal')">✦ Nova reserva</button></div>
+    </div>
+    ${conflicts?`<div class="scope-banner" style="border-color:var(--red);background:var(--red-soft)"><div class="sb-ic" style="background:var(--red)">⚠</div><div><strong>${conflicts} conflito de data</strong> · Villa Aurora tem duas pré-reservas em 22/07.<div class="text-sm text-mut">Confirme o sinal de uma delas para liberar a agenda.</div></div><div class="sb-spacer"></div><button class="btn btn-sm btn-secondary" onclick="route('pagamentos')">Resolver</button></div>`:''}
+    <div class="card">
+      <div class="card-head">
+        <div class="row"><button class="icon-btn" onclick="calM=(calM+11)%12;renderAgenda()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg></button>
+        <div class="card-title" style="min-width:150px;justify-content:center">${MONTHS[calM]} ${calY}</div>
+        <button class="icon-btn" onclick="calM=(calM+1)%12;renderAgenda()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg></button></div>
+        <div class="row" style="flex-wrap:wrap">${venuesShown.map(v=>`<span class="pill" style="background:${v.color}22;color:${v.color}">${v.emoji} ${v.name}</span>`).join('')}</div>
+      </div>
+      <div class="cal-grid" style="margin-bottom:8px">${dow.map(x=>`<div class="cal-dow">${x}</div>`).join('')}</div>
+      <div class="cal-grid">${grid}</div>
+    </div>`;
+  wireRoutes();
+}
+
+/* ---------- LEAD INBOX (WhatsApp IA) ---------- */
+function renderLeadInbox(){
+  const leads=scopedDeals().filter(d=>d.wa&&(d.stage==='novo'||d.stage==='qualificado'));
+  const score={d7:92,d8:78,d9:88,d10:61,d11:54,d12:47};
+  const summ={
+    d7:'Quer <em>15 anos temático (Paris)</em> para ~200 convidados em <em>jul/2026</em>. Orçamento sinalizado ~R$ 80K. Decisora é a mãe.',
+    d8:'Empresa quer <em>festa de fim de ano</em> para 170 colaboradores em dez. Pediu <em>open bar</em> e estrutura de palco.',
+    d9:'Casal quer <em>casamento 300 pax</em> no jardim em abr/2027. Já visitou o concorrente. Alta intenção.',
+    d10:'Turma de formatura pedindo orçamento — <em>faltou data e nº de convidados</em>.',
+    d11:'Chá revelação para 60 pessoas — <em>sem orçamento definido</em> ainda.',
+    d12:'Casamento em jun/2027 — <em>sem resposta há 25h</em>, IA reengajou.',
+  };
+  el('page-leadinbox').innerHTML=`
+    <div class="page-head">
+      <div><h1 class="page-title">Lead Inbox <span class="ai-chip" style="vertical-align:middle">IA</span></h1><p class="page-sub">Todo lead que chega pelo <strong>WhatsApp Cloud</strong> é qualificado pela IA e vira um card no funil. Você só aprova.</p></div>
+      <div class="page-actions"><span class="pill green dot">WhatsApp Cloud conectado</span></div>
+    </div>
+    <div class="grid" style="grid-template-columns:1.5fr 1fr;align-items:start">
+      <div class="lead-list">
+        ${leads.map(l=>{ const sc=score[l.id]||60; return `<div class="lead-card">
+          <div>
+            <div class="lead-head"><span class="lead-title">${l.client}</span>${typeChip(l.type)}<span class="pill">${venueEmoji(l.venue)} ${venueName(l.venue)}</span>${DEAL_LOCKS[l.id]?'<span class="pill red">falta dado</span>':'<span class="pill green">pronto p/ funil</span>'}</div>
+            <div class="lead-meta"><span>📅 ${l.date}</span><span>👥 ${l.pax} pax</span><span>💰 ${fmtK(l.value)}</span><span>⏱ ${l.slaTime}</span></div>
+            <div class="lead-body">${summ[l.id]||'Lead recebido pela IA.'}</div>
+          </div>
+          <div class="lead-actions">
+            <div style="text-align:center"><div class="lead-score ${scoreClass(sc)}">${sc}</div><div class="score-label">score IA</div></div>
+            <button class="btn btn-brand btn-sm" onclick="approveLead('${l.id}')">Aprovar ✦</button>
+            <button class="btn btn-secondary btn-sm" onclick="openDeal('${l.id}')">Ver conversa</button>
+          </div>
+        </div>`; }).join('')||'<div class="empty"><div class="em-ic">📭</div>Sem leads pendentes neste salão.</div>'}
+      </div>
+      <div class="card">
+        <div class="card-head"><div class="card-title">💬 Conversa · Sofia Ribeiro</div><span class="pill green dot">online</span></div>
+        <div class="wa-thread">
+          <div class="wa-msg them">Oi! Vi o perfil de vocês no Insta 😍 vocês fazem festa de 15 anos?<span class="wa-time">17:42</span></div>
+          <div class="wa-msg ai"><span class="wa-tag">✦ IA Gala</span>Oii, que alegria! 🎉 Fazemos sim, na Villa Aurora. Me conta: pra quantos convidados e tem uma data em mente?<span class="wa-time">17:42</span></div>
+          <div class="wa-msg them">Uns 200 pessoas, em julho. Tema Paris ✨<span class="wa-time">17:45</span></div>
+          <div class="wa-msg ai"><span class="wa-tag">✦ IA Gala</span>Perfeito! 200 convidados cabem lindamente. Nosso pacote 15 Anos começa em R$ 320/convidado e inclui buffet, DJ e camarim. Quer agendar uma visita pra sentir o espaço?<span class="wa-time">17:45</span></div>
+          <div class="wa-msg them">Quero simm! Sábado dá?<span class="wa-time">17:47</span></div>
+          <div class="wa-msg ai"><span class="wa-tag">✦ IA Gala</span>Agendado sábado 10h 💜 Já registrei tudo no sistema pra Bianca te receber. Até lá!<span class="wa-time">17:47</span></div>
+        </div>
+        <div class="divider"></div>
+        <div class="text-sm text-mut">A IA já preencheu: <strong>tipo</strong> 15 Anos · <strong>pax</strong> 200 · <strong>data</strong> jul/2026 · <strong>tema</strong> Paris · <strong>visita</strong> sábado 10h.</div>
+        <button class="btn btn-brand" style="width:100%;justify-content:center;margin-top:12px" onclick="approveLead('d7')">Aprovar e mover p/ Visita agendada</button>
+      </div>
+    </div>`;
+  wireRoutes();
+}
+function approveLead(id){ const d=DEALS.find(x=>x.id===id); if(!d) return; playAI('Qualificando com IA','Lendo a conversa e preenchendo o cadastro…',['Extraindo tipo de festa e data','Estimando nº de convidados','Calculando pacote sugerido','Criando card no funil'],()=>{ d.stage=(id==='d7')?'visita':'qualificado'; toast({title:'Lead aprovado 🎉',sub:`${d.client} entrou no funil. A jornada do cliente começou.`,action:'Ver funil',target:'funil',kind:'success'}); renderKanban(); }); }
+
+/* ---------- EVENTO (detalhe) ---------- */
+function renderEvento(){
+  const d=DEALS.find(x=>x.id===CURRENT_DEAL)||DEALS[0]; const et=EVENT_TYPES[d.type];
+  const pkg=PACKAGES.find(p=>p.type===d.type)||PACKAGES[0];
+  const selectedAddons=['a1','a2','a5','a6'];
+  const pay=PAYMENTS.find(p=>p.client===d.client);
+  el('page-evento').innerHTML=`
+    <div class="page-head">
+      <div>
+        <div class="row" style="margin-bottom:6px">${typeChip(d.type)}<span class="pill ${d.stage==='contrato'?'green':'accent'}">${STAGES.find(s=>s.id===d.stage).title}</span></div>
+        <h1 class="page-title">${d.client}</h1>
+        <p class="page-sub">${venueEmoji(d.venue)} <strong>${venueName(d.venue)}</strong> · ${d.date} · ${d.pax} convidados · valor estimado <strong class="text-accent">${fmtK(d.value)}</strong></p>
+      </div>
+      <div class="page-actions"><button class="btn btn-secondary" data-route="funil">← Funil</button><button class="btn btn-brand" onclick="playAI('Gerando proposta','Montando o pacote perfeito para ${d.client}…',['Selecionando pacote base','Calculando por convidado','Adicionando os adicionais','Renderizando proposta bonita'],()=>toast({title:'Proposta pronta ✦',sub:'Enviada por WhatsApp com link de aceite digital.',kind:'success'}))">✦ Gerar proposta</button></div>
+    </div>
+    <div class="tabs" id="eventoTabs">
+      <div class="tab active" data-tab="ev-resumo">Resumo</div>
+      <div class="tab" data-tab="ev-adic">Adicionais</div>
+      <div class="tab" data-tab="ev-pag">Pagamentos</div>
+      <div class="tab" data-tab="ev-time">Linha do tempo</div>
+    </div>
+
+    <div class="tab-pane active" id="ev-resumo">
+      <div class="grid" style="grid-template-columns:1.4fr 1fr;align-items:start">
+        <div class="card">
+          <div class="card-title" style="margin-bottom:14px">Dados da festa</div>
+          <div class="form-grid">
+            <div class="field"><label>Tipo</label><input value="${et.label}" readonly></div>
+            <div class="field"><label>Salão</label><input value="${venueName(d.venue)}" readonly></div>
+            <div class="field"><label>Data</label><input value="${d.date}" readonly></div>
+            <div class="field"><label>Convidados</label><input value="${d.pax} pax" readonly></div>
+            <div class="field"><label>Pacote base</label><input value="${pkg.name} · ${pkg.perPax}/pax" readonly></div>
+            <div class="field"><label>Responsável</label><input value="${d.owner==='IA'?'Agente IA':d.owner}" readonly></div>
+          </div>
+          <div class="divider"></div>
+          <div class="card-title" style="margin-bottom:12px">Jornada do cliente</div>
+          <div class="journey">
+            <div class="journey-step done"><div class="journey-head"><span class="journey-title">Primeiro contato</span><span class="journey-when">via WhatsApp IA</span></div><div class="journey-desc">Lead qualificado automaticamente pela IA.</div></div>
+            <div class="journey-step done"><div class="journey-head"><span class="journey-title">Visita ao espaço</span><span class="journey-when">realizada</span></div><div class="journey-desc">Cliente conheceu o salão e a decoração base.</div></div>
+            <div class="journey-step ${d.stage==='proposta'?'current':d.stage==='visita'?'current':'done'}"><div class="journey-head"><span class="journey-title">Proposta</span><span class="journey-when">personalizada</span></div><div class="journey-desc">Pacote + adicionais em uma página encantadora.</div></div>
+            <div class="journey-step ${['reserva','contrato'].includes(d.stage)?'done':''}"><div class="journey-head"><span class="journey-title">Reserva + sinal</span><span class="journey-when">Pix</span></div><div class="journey-desc">Sinal garante a data e dispara o plano de pagamento.</div></div>
+            <div class="journey-step ${d.stage==='contrato'?'done':''}"><div class="journey-head"><span class="journey-title">Festa realizada</span><span class="journey-when">o grande dia 🎉</span></div><div class="journey-desc">Depois: pesquisa de satisfação e recompra.</div></div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-title" style="margin-bottom:12px">Contato</div>
+          <div class="list-plain">
+            <div><div class="avatar">${(d.client.match(/\b\w/g)||['C']).slice(0,2).join('')}</div><div style="flex:1"><div style="font-weight:600">${d.client}</div><div class="text-sm text-mut">Cliente</div></div></div>
+          </div>
+          <div class="row" style="gap:8px;margin-top:12px">
+            <button class="btn btn-secondary btn-sm" style="flex:1;justify-content:center" onclick="toast({title:'Abrindo WhatsApp',sub:'Conversa vinculada ao card.',kind:'info'})">💬 WhatsApp</button>
+            <button class="btn btn-secondary btn-sm" style="flex:1;justify-content:center" onclick="toast({title:'Ligando…',sub:'Chamada registrada na timeline.',kind:'info'})">📞 Ligar</button>
+          </div>
+          <div class="divider"></div>
+          <div class="card-title" style="margin-bottom:10px">Resumo financeiro</div>
+          <div class="list-plain">
+            <div style="justify-content:space-between"><span class="text-mut">Pacote base</span><strong class="mono">${pkg.base}</strong></div>
+            <div style="justify-content:space-between"><span class="text-mut">Adicionais (4)</span><strong class="mono">R$ 18.100</strong></div>
+            <div style="justify-content:space-between"><span class="text-mut">Total estimado</span><strong class="mono text-accent">${fmtK(d.value)}</strong></div>
+          </div>
+          <button class="btn btn-brand" style="width:100%;justify-content:center;margin-top:14px" onclick="route('pagamentos')">Ver plano de pagamento →</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="tab-pane" id="ev-adic">
+      <div class="scope-banner"><div class="sb-ic">🎂</div><div>Alguns adicionais o cliente fecha <strong>perto do evento</strong> — como a mesa do bolo. A IA lembra você e o cliente na hora certa.</div><div class="sb-spacer"></div><span class="pill gold">4 selecionados</span></div>
+      <div class="addon-grid">
+        ${ADDONS.slice(0,8).map(a=>{ const sel=selectedAddons.includes(a.id); return `<div class="addon-card" style="${sel?'border-color:var(--accent)':''}">
+          <div class="row" style="justify-content:space-between"><div class="addon-ic">${a.emoji}</div>${a.lateClose?'<span class="pill gold" style="font-size:9px">fecha perto</span>':''}</div>
+          <div class="addon-name">${a.name}</div><div class="addon-cat">${a.cat}</div>
+          <div class="addon-price">${a.price}</div>
+          <div class="addon-foot">${sel?'<span class="pill green dot">no pacote</span>':'<span class="text-sm text-mut">disponível</span>'}<button class="btn btn-sm ${sel?'btn-secondary':'btn-brand'}" onclick="toast({title:'${sel?'Adicional removido':'Adicional incluído ✦'}',sub:'${a.name}',kind:'${sel?'info':'success'}'})">${sel?'Remover':'+ Incluir'}</button></div>
+        </div>`; }).join('')}
+      </div>
+    </div>
+
+    <div class="tab-pane" id="ev-pag">
+      ${pay?installmentBlock(pay):`<div class="empty"><div class="em-ic">💸</div>O plano de pagamento é criado quando o sinal é pago.<br><button class="btn btn-brand" style="margin-top:12px" onclick="toast({title:'Sinal simulado ✦',sub:'Plano de 10x no Pix criado.',kind:'success'})">Registrar sinal</button></div>`}
+    </div>
+
+    <div class="tab-pane" id="ev-time">
+      <div class="card"><div class="card-title" style="margin-bottom:14px">Histórico</div>
+        <div class="timeline">
+          <div class="timeline-item"><span class="timeline-date">30 jun</span><span class="timeline-text">IA qualificou o lead pelo WhatsApp</span><span class="timeline-value">✦ IA</span></div>
+          <div class="timeline-item"><span class="timeline-date">28 jun</span><span class="timeline-text">Visita ao salão agendada</span><span class="timeline-value">${d.owner}</span></div>
+          <div class="timeline-item"><span class="timeline-date">26 jun</span><span class="timeline-text">Primeiro contato · veio do Instagram</span><span class="timeline-value">🌐</span></div>
+          <div class="timeline-item"><span class="timeline-date">—</span><span class="timeline-text">Proposta gerada e enviada</span><span class="timeline-value text-mut">pendente</span></div>
+        </div>
+      </div>
+    </div>`;
+  bindTabs('eventoTabs'); wireRoutes();
+}
+
+/* ---------- CLIENTES ---------- */
+function renderClientes(){
+  const list=scopedClients();
+  el('page-clientes').innerHTML=`
+    <div class="page-head">
+      <div><h1 class="page-title">Clientes</h1><p class="page-sub">Sua base viva de festeiros. Importe seus clientes antigos e deixe a IA reativar quem já casou, fez bodas ou aniversário com você.</p></div>
+      <div class="page-actions"><button class="btn btn-secondary" onclick="toast({title:'Importar base',sub:'Suba um CSV ou conecte a agenda antiga.',kind:'info'})">⬆ Importar base</button><button class="btn btn-brand" onclick="openModal('newEventModal')">✦ Novo cliente</button></div>
+    </div>
+    <div class="grid kpi-grid" style="grid-template-columns:repeat(4,1fr)">
+      <div class="kpi"><div class="kpi-label">Clientes na base</div><div class="kpi-value">${SCOPE==='all'?'1.284':list.length*40}</div><div class="kpi-meta">${list.length} ativos neste recorte</div></div>
+      <div class="kpi gold"><div class="kpi-label">LTV médio</div><div class="kpi-value">R$ 71K</div><div class="kpi-meta">por cliente</div></div>
+      <div class="kpi rose"><div class="kpi-label">Recompra</div><div class="kpi-value">23%</div><div class="kpi-meta">bodas · aniversários</div></div>
+      <div class="kpi green"><div class="kpi-label">Reativados pela IA</div><div class="kpi-value">18</div><div class="kpi-meta">nos últimos 90 dias</div></div>
+    </div>
+    <div class="card mt-18" style="background:var(--accent-soft);border-color:var(--accent)">
+      <div class="row" style="justify-content:space-between;flex-wrap:wrap;gap:12px">
+        <div class="row"><div class="avatar grad">AR</div><div><div style="font-weight:700">Ana & Ricardo · casaram em 2024 💍</div><div class="text-sm text-mut">Perfil ideal para <strong>bodas de estanho</strong> em ~60 dias · a IA pode enviar um convite carinhoso</div></div></div>
+        <button class="btn btn-brand btn-sm" onclick="toast({title:'Campanha criada ✦',sub:'A IA vai enviar um convite de bodas pelo WhatsApp.',action:'Ver IA',target:'ia',kind:'success'})">Reativar com IA</button>
+      </div>
+    </div>
+    <div class="table-card mt-18">
+      <table class="tbl">
+        <thead><tr><th>Cliente</th><th>Tipo</th><th>Salão</th><th>WhatsApp</th><th>Status</th><th class="num">Valor</th><th></th></tr></thead>
+        <tbody>
+          ${list.map(c=>`<tr>
+            <td><div class="row"><div class="avatar" style="width:30px;height:30px;font-size:11px">${c.initials}</div><strong>${c.name}</strong></div></td>
+            <td>${typeChip(c.type)}</td>
+            <td class="text-mut">${venueEmoji(c.venue)} ${venueName(c.venue)}</td>
+            <td class="mono text-sm">${c.phone}</td>
+            <td><span class="pill ${c.status==='Contrato'?'green':c.status==='Reserva'?'accent':c.status==='Cliente antigo'?'gold':'blue'}">${c.status}</span></td>
+            <td class="num">${c.value?fmtK(c.value):'—'}</td>
+            <td><button class="btn btn-ghost btn-sm">›</button></td>
+          </tr>`).join('')}
+        </tbody>
+      </table>
+    </div>`;
+  wireRoutes();
+}
+
+/* ---------- PACOTES & PREÇOS ---------- */
+function renderPrecos(){
+  el('page-precos').innerHTML=`
+    <div class="page-head">
+      <div><h1 class="page-title">Pacotes & Preços</h1><p class="page-sub">A tabela-mestre por tipo de festa. Muda o preço aqui e todas as propostas passam a usar o valor novo — sem retrabalho.</p></div>
+      <div class="page-actions"><button class="btn btn-secondary">Histórico de versões</button><button class="btn btn-brand" onclick="toast({title:'Novo pacote',sub:'Monte um pacote sob medida.',kind:'info'})">✦ Novo pacote</button></div>
+    </div>
+    <div class="card-title" style="margin-bottom:14px;font-size:16px">Pacotes por tipo de festa <span class="text-mut" style="font-weight:400;font-size:12px">· preço base por convidado</span></div>
+    <div class="price-grid">
+      ${PACKAGES.map(p=>`<div class="price-card ${p.featured?'featured':''}">
+        <div class="price-emoji">${p.emoji}</div>
+        <div class="price-name">${p.name}</div>
+        <div class="price-val">${p.perPax}<small> /convidado</small></div>
+        <div class="text-sm text-mut">a partir de <strong>${p.base}</strong></div>
+        <div class="price-feats">${p.feats.map(f=>`<div><span class="ck">✓</span>${f}</div>`).join('')}</div>
+        <button class="btn ${p.featured?'btn-brand':'btn-secondary'}" style="justify-content:center;margin-top:6px">Editar pacote</button>
+      </div>`).join('')}
+    </div>
+    <div class="divider"></div>
+    <div class="card-title" style="margin:6px 0 14px;font-size:16px">Planos do Gala <span class="text-mut" style="font-weight:400;font-size:12px">· o que você paga pra usar o sistema (referência Revenda Mais)</span></div>
+    <div class="price-grid">
+      ${PLANS.map(p=>`<div class="price-card ${p.featured?'featured':''}">
+        <div class="price-emoji">${p.emoji}</div>
+        <div class="price-name">${p.name}</div>
+        <div class="price-val">${p.price}<small> ${p.per}</small></div>
+        <div class="price-feats">${p.feats.map(f=>`<div><span class="ck">✓</span>${f}</div>`).join('')}</div>
+        <button class="btn ${p.featured?'btn-brand':'btn-secondary'}" style="justify-content:center;margin-top:6px">${p.featured?'Plano atual':'Escolher'}</button>
+      </div>`).join('')}
+    </div>`;
+  wireRoutes();
+}
+
+/* ---------- ADICIONAIS ---------- */
+let addonFilter='todos';
+function renderAdicionais(){
+  const cats=['todos',...new Set(ADDONS.map(a=>a.cat))];
+  const list=addonFilter==='todos'?ADDONS:ADDONS.filter(a=>a.cat===addonFilter);
+  el('page-adicionais').innerHTML=`
+    <div class="page-head">
+      <div><h1 class="page-title">Adicionais</h1><p class="page-sub">O que faz a festa virar inesquecível — e a margem crescer. Itens marcados <span class="pill gold" style="font-size:9px">fecha perto</span> a IA lembra o cliente perto da data (ex: mesa do bolo).</p></div>
+      <div class="page-actions"><button class="btn btn-brand" onclick="toast({title:'Novo adicional',sub:'Cadastre um item extra.',kind:'info'})">✦ Novo adicional</button></div>
+    </div>
+    <div class="row" style="flex-wrap:wrap;margin-bottom:18px">${cats.map(c=>`<button class="btn btn-sm ${addonFilter===c?'btn-brand':'btn-secondary'}" onclick="addonFilter='${c}';renderAdicionais()">${c==='todos'?'Todos':c}</button>`).join('')}</div>
+    <div class="addon-grid">
+      ${list.map(a=>`<div class="addon-card">
+        <div class="row" style="justify-content:space-between"><div class="addon-ic">${a.emoji}</div>${a.lateClose?'<span class="pill gold" style="font-size:9px">fecha perto</span>':''}</div>
+        <div class="addon-name">${a.name}</div><div class="addon-cat">${a.cat}</div>
+        <div class="addon-price">${a.price}</div>
+        <div class="addon-foot"><span class="text-sm text-mut">🔥 ${a.sold} vendas</span><button class="btn btn-sm btn-secondary">Editar</button></div>
+      </div>`).join('')}
+    </div>`;
+  wireRoutes();
+}
+
+/* ---------- ESTOQUE & EQUIPE ---------- */
+function renderEstoque(){
+  el('page-estoque').innerHTML=`
+    <div class="page-head">
+      <div><h1 class="page-title">Estoque & Equipe</h1><p class="page-sub">Comida, bebida e time alinhados com a agenda. O sistema calcula o consumo por festa e avisa quando falta garçom, espumante ou salgado.</p></div>
+      <div class="page-actions"><button class="btn btn-secondary">📋 Requisição</button><button class="btn btn-brand" onclick="toast({title:'Item cadastrado',sub:'Novo item no estoque.',kind:'success'})">✦ Novo item</button></div>
+    </div>
+    <div class="grid kpi-grid" style="grid-template-columns:repeat(3,1fr)">
+      <div class="kpi green"><div class="kpi-label">Itens em dia</div><div class="kpi-value">11</div><div class="kpi-meta">acima do mínimo</div></div>
+      <div class="kpi rose"><div class="kpi-label">Abaixo do mínimo</div><div class="kpi-value">2</div><div class="kpi-meta">cerveja · segurança</div></div>
+      <div class="kpi gold"><div class="kpi-label">Custo previsto</div><div class="kpi-value">R$ 84K</div><div class="kpi-meta">festas dos próximos 30 dias</div></div>
+    </div>
+    ${INVENTORY.map(group=>`<div class="table-card mt-18">
+      <div class="card-head" style="padding:14px 18px 0"><div class="card-title">${group.cat==='Alimentos'?'🍽️':group.cat==='Bebidas'?'🥂':'🧑‍🍳'} ${group.cat}</div></div>
+      <table class="tbl">
+        <thead><tr><th>Item</th><th>Unidade</th><th>Em estoque</th><th style="width:180px">Nível</th><th class="num">Custo unit.</th><th></th></tr></thead>
+        <tbody>
+          ${group.items.map(it=>{ const ratio=Math.min(100,Math.round(it.stock/it.min*70)); const low=it.stock<it.min; const cls=low?'low':it.stock<it.min*1.4?'mid':'ok'; return `<tr>
+            <td><strong>${it.name}</strong></td>
+            <td class="text-mut">${it.unit}</td>
+            <td class="mono ${low?'text-rose':''}">${it.stock} ${low?'⚠':''}</td>
+            <td><div class="inv-bar ${cls}"><div style="width:${ratio}%"></div></div><div class="text-sm text-mut" style="margin-top:3px">mín. ${it.min}</div></td>
+            <td class="num">${it.cost}</td>
+            <td>${low?'<span class="pill red">repor</span>':'<span class="pill green">ok</span>'}</td>
+          </tr>`; }).join('')}
+        </tbody>
+      </table>
+    </div>`).join('')}`;
+  wireRoutes();
+}
+
+/* ---------- PAGAMENTOS ---------- */
+function payTrack(p){
+  let dots='';
+  for(let i=1;i<=p.n;i++){
+    let cls = i<=p.paid?'paid' : (i===p.paid+1?(p.status==='atrasada'?'late':'due'):'next');
+    dots+=`<div class="pay-dot ${cls}">${cls==='paid'?'✓':i}</div>`;
+  }
+  return `<div class="pay-track">${dots}</div>`;
+}
+function installmentBlock(p){
+  const v=fmtBRL(p.value);
+  return `<div class="card">
+    <div class="card-head"><div><div class="card-title">${p.client}</div><div class="card-sub">${venueEmoji(p.venue)} ${venueName(p.venue)} · total ${fmtBRL(p.total)} · ${p.n}x de ${v} no ${p.method}</div></div>
+      <span class="pill ${p.status==='atrasada'?'red':p.status==='vence hoje'?'amber':'green'} dot">${p.status}</span></div>
+    ${payTrack(p)}
+    <div class="row" style="justify-content:space-between;margin-top:14px;flex-wrap:wrap;gap:10px">
+      <div class="row" style="gap:18px"><div><div class="text-sm text-mut">Pago</div><strong>${p.paid}/${p.n} · ${fmtBRL(p.paid*p.value)}</strong></div><div><div class="text-sm text-mut">Próxima parcela</div><strong>${p.next}</strong></div></div>
+      <div class="row">${p.status==='atrasada'?'<span class="pill red">IA enviou 2 lembretes</span>':'<span class="pill accent dot">IA cobra no vencimento</span>'}<button class="btn btn-brand btn-sm" onclick="toast({title:'Cobrança Pix enviada ✦',sub:'${p.client} recebeu o QR Code no WhatsApp.',kind:'success'})">Cobrar agora</button></div>
+    </div>
+  </div>`;
+}
+function renderPagamentos(){
+  const list=scopedPayments();
+  const recebido=list.reduce((a,p)=>a+p.paid*p.value,0);
+  const aReceber=list.reduce((a,p)=>a+(p.n-p.paid)*p.value,0);
+  const atrasado=list.filter(p=>p.status==='atrasada').reduce((a,p)=>a+p.value,0);
+  el('page-pagamentos').innerHTML=`
+    <div class="page-head">
+      <div><h1 class="page-title">Pagamentos</h1><p class="page-sub">A festa só acontece se pagar. A IA cobra a <strong>mensalidade no Pix</strong> na data certa, manda o QR Code no WhatsApp e avisa você se atrasar.</p></div>
+      <div class="page-actions"><span class="pill green dot">Pix conectado</span><button class="btn btn-brand" onclick="toast({title:'Cobrança em massa ✦',sub:'A IA vai disparar os Pix do dia.',kind:'success'})">Disparar cobranças do dia</button></div>
+    </div>
+    <div class="grid kpi-grid" style="grid-template-columns:repeat(4,1fr)">
+      <div class="kpi green"><div class="kpi-label">Recebido</div><div class="kpi-value">${fmtBRL(recebido)}</div><div class="kpi-meta">nas festas ativas</div></div>
+      <div class="kpi gold"><div class="kpi-label">A receber</div><div class="kpi-value">${fmtBRL(aReceber)}</div><div class="kpi-meta">parcelas futuras</div></div>
+      <div class="kpi rose"><div class="kpi-label">Em atraso</div><div class="kpi-value">${fmtBRL(atrasado)}</div><div class="kpi-meta">${list.filter(p=>p.status==='atrasada').length} parcela(s)</div></div>
+      <div class="kpi"><div class="kpi-label">Taxa de inadimplência</div><div class="kpi-value">2,4%</div><div class="kpi-meta">bem abaixo do setor</div></div>
+    </div>
+    <div class="scope-banner mt-18"><div class="sb-ic">🤖</div><div><strong>Agente de Cobrança</strong> · hoje vence a parcela do <strong>Grupo Vitae</strong>. A IA já preparou o Pix e vai enviar às 9h.<div class="text-sm text-mut">Régua: D-3 lembrete gentil · D0 QR Code · D+1 e D+3 reforço · D+5 aviso ao gerente.</div></div><div class="sb-spacer"></div><button class="btn btn-sm btn-secondary" onclick="route('ia')">Configurar régua</button></div>
+    <div class="grid mt-18" style="grid-template-columns:1fr">
+      ${list.map(p=>installmentBlock(p)).join('')||'<div class="empty"><div class="em-ic">💸</div>Sem planos de pagamento neste salão.</div>'}
+    </div>`;
+  wireRoutes();
+  const np=el('navPay'); if(np) np.textContent=PAYMENTS.filter(p=>p.status!=='em dia').length;
+}
+
+/* ---------- FINANCEIRO ---------- */
+const FIN_ROWS=[
+  { ev:'Marina & Léo · Casamento', venue:'jardim', rec:98000, cost:57000 },
+  { ev:'Helena · 15 Anos', venue:'aurora', rec:76000, cost:44000 },
+  { ev:'Grupo Vitae · Convenção', venue:'terraco', rec:64000, cost:41000 },
+  { ev:'Nakamura · Bodas', venue:'aurora', rec:41000, cost:23000 },
+  { ev:'Bruna & Carla · Mini wedding', venue:'jardim', rec:52000, cost:29000 },
+];
+function renderFinanceiro(){
+  const rows=SCOPE==='all'?FIN_ROWS:FIN_ROWS.filter(r=>r.venue===SCOPE);
+  const rec=rows.reduce((a,r)=>a+r.rec,0), cost=rows.reduce((a,r)=>a+r.cost,0); const marg=rec-cost;
+  el('page-financeiro').innerHTML=`
+    <div class="page-head">
+      <div><h1 class="page-title">Financeiro</h1><p class="page-sub">Margem real por festa, atualizada conforme os custos de buffet, bebida e equipe são lançados. Nada de descobrir o lucro só no fim.</p></div>
+      <div class="page-actions"><button class="btn btn-secondary">Exportar DRE</button></div>
+    </div>
+    <div class="grid kpi-grid" style="grid-template-columns:repeat(3,1fr)">
+      <div class="kpi green"><div class="kpi-label">Receita</div><div class="kpi-value">${fmtBRL(rec)}</div><div class="kpi-meta">festas do período</div></div>
+      <div class="kpi rose"><div class="kpi-label">Custos</div><div class="kpi-value">${fmtBRL(cost)}</div><div class="kpi-meta">buffet · bebida · equipe</div></div>
+      <div class="kpi gold"><div class="kpi-label">Margem</div><div class="kpi-value">${Math.round(marg/rec*100)}%</div><div class="kpi-meta">${fmtBRL(marg)} de lucro</div></div>
+    </div>
+    <div class="grid mt-18" style="grid-template-columns:1.3fr 1fr;align-items:start">
+      <div class="table-card">
+        <div class="card-head" style="padding:14px 18px 0"><div class="card-title">Margem por festa</div></div>
+        <table class="tbl">
+          <thead><tr><th>Festa</th><th class="num">Receita</th><th class="num">Custo</th><th class="num">Margem</th></tr></thead>
+          <tbody>${rows.map(r=>{ const m=r.rec-r.cost; const pct=Math.round(m/r.rec*100); return `<tr><td><strong>${r.ev}</strong><div class="text-sm text-mut">${venueEmoji(r.venue)} ${venueName(r.venue)}</div></td><td class="num">${fmtBRL(r.rec)}</td><td class="num text-mut">${fmtBRL(r.cost)}</td><td class="num"><span class="pill ${pct>=42?'green':pct>=35?'gold':'amber'}">${pct}%</span></td></tr>`; }).join('')}</tbody>
+        </table>
+      </div>
+      <div class="card"><div class="card-head"><div class="card-title">Faturamento por salão</div></div><div class="chart-host" style="height:250px"><canvas id="chartVenues"></canvas></div></div>
+    </div>`;
+  wireRoutes();
+}
+
+/* ---------- AGENTE IA & MARKETING ---------- */
+function renderIA(){
+  el('page-ia').innerHTML=`
+    <div class="page-head">
+      <div><h1 class="page-title">Agente IA & Marketing <span class="ai-chip" style="vertical-align:middle">IA</span></h1><p class="page-sub">Três agentes trabalhando 24h pelos seus salões: qualifica quem chega, cobra quem deve e reativa quem já festejou com você.</p></div>
+      <div class="page-actions"><span class="pill green dot">WhatsApp Cloud · oficial Meta</span></div>
+    </div>
+    <div class="grid" style="grid-template-columns:repeat(3,1fr)">
+      <div class="card"><div class="row" style="justify-content:space-between"><div class="addon-ic" style="background:var(--grad-brand)">🤖</div><span class="status-dot connected">Ativo</span></div>
+        <div class="card-title mt-12">Agente de Qualificação</div><div class="text-sm text-mut" style="margin-top:6px">Responde no WhatsApp, entende o tipo de festa, data e nº de convidados, e cria o card no funil.</div>
+        <div class="divider"></div><div class="row" style="justify-content:space-between"><span class="text-sm text-mut">Leads no mês</span><strong>46</strong></div><div class="row" style="justify-content:space-between mt-8"><span class="text-sm text-mut">Tempo de resposta</span><strong class="text-accent">7 seg</strong></div>
+      </div>
+      <div class="card"><div class="row" style="justify-content:space-between"><div class="addon-ic" style="background:var(--rose)">💸</div><span class="status-dot connected">Ativo</span></div>
+        <div class="card-title mt-12">Agente de Cobrança</div><div class="text-sm text-mut" style="margin-top:6px">Cobra a mensalidade no <strong>Pix</strong> na data certa, envia o QR Code e faz a régua de lembretes.</div>
+        <div class="divider"></div><div class="row" style="justify-content:space-between"><span class="text-sm text-mut">Recuperado no mês</span><strong>R$ 84K</strong></div><div class="row" style="justify-content:space-between mt-8"><span class="text-sm text-mut">Inadimplência</span><strong class="text-accent">2,4%</strong></div>
+      </div>
+      <div class="card"><div class="row" style="justify-content:space-between"><div class="addon-ic" style="background:var(--gold)">📣</div><span class="status-dot pending">Rascunho</span></div>
+        <div class="card-title mt-12">Agente de Promoções</div><div class="text-sm text-mut" style="margin-top:6px">Dispara promoções e reativa clientes antigos (bodas, aniversários) com a base de contatos.</div>
+        <div class="divider"></div><div class="row" style="justify-content:space-between"><span class="text-sm text-mut">Base de contatos</span><strong>1.284</strong></div><div class="row" style="justify-content:space-between mt-8"><span class="text-sm text-mut">Opt-in WhatsApp</span><strong class="text-accent">91%</strong></div>
+      </div>
+    </div>
+    <div class="grid mt-18" style="grid-template-columns:1.3fr 1fr;align-items:start">
+      <div class="card">
+        <div class="card-head"><div class="card-title">📣 Nova campanha de promoção</div><span class="pill gold">rascunho</span></div>
+        <div class="form-grid">
+          <div class="field"><label>Nome</label><input value="Data de junho com 10% off"></div>
+          <div class="field"><label>Público</label><select><option>Leads sem resposta (28)</option><option>Clientes 2024 · bodas</option><option>Aniversariantes do mês</option></select></div>
+          <div class="field"><label>Salão</label><select><option>Todos os salões</option><option>Espaço Jardim</option><option>Villa Aurora</option><option>Terraço Miramar</option></select></div>
+          <div class="field"><label>Canal</label><select><option>WhatsApp Cloud</option><option>Instagram Direct</option></select></div>
+        </div>
+        <div class="field" style="margin-top:12px"><label>Mensagem</label><textarea>Oi {nome}! 🎉 Junho tá com data especial: fechando sua festa esse mês, você ganha 10% no pacote + a mesa de doces por nossa conta. Bora marcar uma visita? 💜</textarea></div>
+        <div class="row" style="justify-content:flex-end;margin-top:14px"><button class="btn btn-secondary">Pré-visualizar</button><button class="btn btn-brand" onclick="playAI('Enviando campanha','Disparando pelo WhatsApp Cloud…',['Selecionando 28 contatos','Personalizando cada mensagem','Respeitando opt-in','Enviando'],()=>toast({title:'Campanha enviada 🎉',sub:'28 mensagens no WhatsApp. Respostas caem no Lead Inbox.',action:'Ver leads',target:'leadinbox',kind:'success'}))">Enviar campanha ✦</button></div>
+      </div>
+      <div class="card">
+        <div class="card-title" style="margin-bottom:12px">Régua de cobrança (Pix)</div>
+        <div class="list-plain">
+          <div style="justify-content:space-between"><span>D-3 · lembrete gentil</span><span class="pill green dot">on</span></div>
+          <div style="justify-content:space-between"><span>D0 · QR Code do Pix</span><span class="pill green dot">on</span></div>
+          <div style="justify-content:space-between"><span>D+1 · reforço</span><span class="pill green dot">on</span></div>
+          <div style="justify-content:space-between"><span>D+3 · segundo reforço</span><span class="pill green dot">on</span></div>
+          <div style="justify-content:space-between"><span>D+5 · aviso ao gerente</span><span class="pill amber dot">alerta</span></div>
+        </div>
+        <div class="divider"></div>
+        <div class="card-title" style="margin-bottom:10px">Tom de voz da IA</div>
+        <div class="row" style="flex-wrap:wrap"><span class="pill accent">Carinhoso</span><span class="pill">Objetivo</span><span class="pill">Festivo 🎉</span></div>
+      </div>
+    </div>`;
+  wireRoutes();
+}
+
+/* ---------- RELATÓRIOS ---------- */
+function renderRelatorios(){
+  el('page-relatorios').innerHTML=`
+    <div class="page-head">
+      <div><h1 class="page-title">Relatórios</h1><p class="page-sub">O raio-x dos três salões: de onde vêm os leads, o que converte e qual espaço puxa a receita.</p></div>
+      <div class="page-actions"><button class="btn btn-secondary">Últimos 6 meses ▾</button><button class="btn btn-secondary">Exportar PDF</button></div>
+    </div>
+    <div class="grid" style="grid-template-columns:1fr 1fr;align-items:start">
+      <div class="card"><div class="card-head"><div class="card-title">Faturamento por salão</div></div><div class="chart-host" style="height:250px"><canvas id="chartVenues"></canvas></div></div>
+      <div class="card"><div class="card-head"><div class="card-title">Leads por canal</div></div><div class="chart-host" style="height:250px"><canvas id="chartChannels"></canvas></div></div>
+    </div>
+    <div class="grid mt-18" style="grid-template-columns:1fr 1fr;align-items:start">
+      <div class="card"><div class="card-head"><div class="card-title">Funil de conversão</div><span class="pill accent">12%</span></div><div class="chart-host" style="height:230px"><canvas id="chartFunnel"></canvas></div></div>
+      <div class="card"><div class="card-head"><div class="card-title">Ranking de salões</div></div>
+        <div class="ranking-row"><div class="ranking-pos gold">1</div><div><strong>Espaço Jardim</strong><div class="text-sm text-mut">🌿 casamentos</div></div><div class="ranking-bar"><div style="width:100%"></div></div><strong class="mono num">R$ 512K</strong></div>
+        <div class="ranking-row"><div class="ranking-pos silver">2</div><div><strong>Villa Aurora</strong><div class="text-sm text-mut">✨ 15 anos</div></div><div class="ranking-bar"><div style="width:91%"></div></div><strong class="mono num">R$ 468K</strong></div>
+        <div class="ranking-row"><div class="ranking-pos bronze">3</div><div><strong>Terraço Miramar</strong><div class="text-sm text-mut">🌆 corporativo</div></div><div class="ranking-bar"><div style="width:65%"></div></div><strong class="mono num">R$ 331K</strong></div>
+        <div class="divider"></div>
+        <div class="card-title" style="margin-bottom:10px">Tipos de festa mais rentáveis</div>
+        <div class="row" style="flex-wrap:wrap"><span class="pill rose">💍 Casamento · 44%</span><span class="pill purple">👑 15 Anos · 42%</span><span class="pill blue">💼 Corporativo · 36%</span></div>
+      </div>
+    </div>`;
+  wireRoutes();
+}
+
+/* ---------- CONFIGURAÇÕES ---------- */
+const INTEGS=[
+  { ic:'💬', name:'WhatsApp Cloud API', desc:'API oficial da Meta para atender e cobrar pelo WhatsApp.', st:'connected', stl:'Conectado' },
+  { ic:'⚡', name:'Pix (banco)', desc:'Geração de QR Code e conciliação automática das parcelas.', st:'connected', stl:'Conectado' },
+  { ic:'📅', name:'Google Calendar', desc:'Sincroniza a agenda dos salões com o calendário da equipe.', st:'connected', stl:'Conectado' },
+  { ic:'📸', name:'Instagram Direct', desc:'Captura leads que chamam no direct e joga no funil.', st:'connected', stl:'Conectado' },
+  { ic:'✍️', name:'Assinatura digital', desc:'Contrato de festa assinado pelo celular, com validade jurídica.', st:'pending', stl:'Configurar' },
+  { ic:'🧾', name:'Nota fiscal (NF-e)', desc:'Emite NFS-e automaticamente a cada parcela recebida.', st:'disabled', stl:'Em breve' },
+];
+function renderConfig(){
+  el('page-config').innerHTML=`
+    <div class="page-head">
+      <div><h1 class="page-title">Configurações</h1><p class="page-sub">Seus salões, o funil que ensina a equipe e as integrações que fazem o Gala conversar com o resto do mundo.</p></div>
+    </div>
+    <div class="card-title" style="margin-bottom:14px;font-size:16px">🏛️ Seus salões</div>
+    <div class="grid" style="grid-template-columns:repeat(3,1fr)">
+      ${VENUES.map(v=>`<div class="card"><div class="row" style="justify-content:space-between"><div class="row"><span class="venue-dot" style="background:${v.color}22;color:${v.color};border-radius:10px;width:34px;height:34px;font-size:17px">${v.emoji}</span><div><div style="font-weight:700">${v.name}</div><div class="text-sm text-mut">${v.city}</div></div></div><span class="pill green dot">ativo</span></div>
+        <div class="divider"></div>
+        <div class="row" style="justify-content:space-between"><span class="text-sm text-mut">Capacidade</span><strong>${v.cap} pax</strong></div>
+        <div class="row" style="justify-content:space-between;margin-top:8px"><span class="text-sm text-mut">Gerente</span><strong>${v.manager}</strong></div>
+        <div class="row" style="justify-content:space-between;margin-top:8px"><span class="text-sm text-mut">Especialidade</span><strong>${v.tag}</strong></div>
+        <button class="btn btn-secondary" style="width:100%;justify-content:center;margin-top:14px">Editar salão</button>
+      </div>`).join('')}
+    </div>
+    <div class="divider"></div>
+    <div class="card-title" style="margin:6px 0 14px;font-size:16px">🎯 Etapas do funil <span class="text-mut" style="font-weight:400;font-size:12px">· travas de campo guiam a equipe</span></div>
+    <div class="card">
+      <div class="row" style="flex-wrap:wrap;gap:10px">
+        ${STAGES.map((s,i)=>`<div class="row" style="gap:8px"><span class="pill" style="background:var(--bg-3)"><span class="stage-dot" style="background:${s.dot}"></span>${s.title}</span>${i<STAGES.length-1?'<span class="text-mut">→</span>':''}</div>`).join('')}
+      </div>
+      <div class="text-sm text-mut" style="margin-top:14px">Ex.: para sair de <strong>Novo lead</strong> a IA exige <em>tipo de festa, data e nº de convidados</em>. Sem isso, o card não avança — é o funil que ensina.</div>
+    </div>
+    <div class="divider"></div>
+    <div class="card-title" style="margin:6px 0 14px;font-size:16px">🔌 Integrações</div>
+    <div class="integ-grid">
+      ${INTEGS.map(g=>`<div class="integ-card">
+        <div class="integ-head"><div class="integ-icon">${g.ic}</div><div class="integ-name">${g.name}</div></div>
+        <div class="integ-desc">${g.desc}</div>
+        <div class="integ-foot"><span class="status-dot ${g.st}">${g.st==='connected'?'Conectado':g.st==='pending'?'Pendente':'Em breve'}</span><button class="btn btn-sm ${g.st==='connected'?'btn-secondary':'btn-brand'}">${g.stl}</button></div>
+      </div>`).join('')}
+    </div>`;
+  wireRoutes();
+}
+
+/* ---------- TABS HELPER ---------- */
+function bindTabs(rootId){
+  const root=el(rootId); if(!root) return;
+  root.querySelectorAll('.tab').forEach(t=>t.addEventListener('click',()=>{
+    root.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));
+    t.classList.add('active');
+    const pane=t.dataset.tab;
+    document.querySelectorAll('.tab-pane').forEach(p=>{ if(p.id===pane){p.classList.add('active');} else if([...root.querySelectorAll('.tab')].some(tt=>tt.dataset.tab===p.id)) p.classList.remove('active'); });
+  }));
+}
+
+/* ---------- REGISTER + BOOT ---------- */
+Object.assign(PAGE_RENDER,{ dashboard:renderDashboard, agenda:renderAgenda, leadinbox:renderLeadInbox, evento:renderEvento, clientes:renderClientes, precos:renderPrecos, adicionais:renderAdicionais, estoque:renderEstoque, pagamentos:renderPagamentos, financeiro:renderFinanceiro, ia:renderIA, relatorios:renderRelatorios, config:renderConfig });
+renderDashboard();
+
+
+/* ---------- BOOT ---------- */
+renderVenueMenu();
+wireRoutes();
+renderKanban();
+renderCharts();
+</script>
+</body>
+</html>
